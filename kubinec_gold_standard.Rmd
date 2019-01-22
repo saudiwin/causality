@@ -1,30 +1,269 @@
 ---
-title: 'Getting Off the Gold Standard: Unifying Causal Thinking'
+title: 'Getting Off the Gold Standard in Causal Thinking'
 author: "Robert Kubinec"
 date: "December 7, 2018"
 output: html_document
+abstract: 'I argue that social scientific practice would be improved if we no longer considered randomized experiments to be the *gold* standard for causal inference. Instead, we should consider adopting three *silver* standards relating to distinct theories of causation: experimental approaches with the counterfactual theory, large-N observational studies with Humean causation, and qualitative process-tracing with mechanistic causation. Under ideal conditions, any of these three theories provide strong evidence of an important part of what we mean by causality. If each of these theories agree, then we approach the lowest level of uncertainty possible in causal effects. I also discuss the use of entropy, or information theory, as a possible yardstick for evaluating research designs across the silver standards.'
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE,
+                      warning=FALSE,
+                      message = FALSE)
+require(dplyr)
+require(ggplot2)
+require(quickDAG)
+require(entropy)
+require(network)
+require(ggnetwork)
 ```
 
-## R Markdown
+> You shall not crucify mankind upon a cross of gold. - William Jennings Bryan, July 8, 1896
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+The renewed attention to causal identification in the last twenty years has elevated the status of randomized experiment to the sine qua non *gold* standard of the social sciences. Nonetheless, research employing observational data, both qualitative and quantitative, continues unabated, albeit with a new wrinkle: because observational data cannot, by definition, assign cases to receive causal treatments, any conclusions from these studies must be *descriptive*, rather than causal. However, even though this new norm has received widespread adoption in the social sciences and political science and economics in particular, the way that social scientists discuss and interpret their data often departs from this clean-cut approach. Analyses with observational data continue to be performed in a way that suggests causal interpretations, and even qualitative evidence is cited as valid explanations for human actions. This disjuncture between the clean logic of "causal empiricism" [CITE SAMII] and actual practice has created considerable confusion among researchers who must decide whether to devote precious resources to observational data collection that is fatally doomed regardless of its promise or an experiment even if that experiment would not answer their research question.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+This paper inverts the meaning of *gold standard* by considering the use of the phrase in heated monetary debates of the 19th century. The quotation above by William Jennings Bryan referenced devaluation occurring in the United States as a consequence of pegging the dollar to gold reserves. When the price of gold increased, the money supply constricted and borrowers would have to pay more than they initially agreed to. Bryan and his confederates wanted to switch to the silver standard, of which there was a much more plentiful supply, in order to maximize much-needed "specie" for the United States' quickly growing economy.
 
-```{r cars}
-summary(cars)
+The analogy made in this paper is that employing a gold standard in causality can cause a similar deflation of the evidence available to answer a research question. The underlying problem is the artificiality of value. The price of gold should not be able to determine the value of all commodities in an economy, and similarly experiments should not be used as the only yardstick for evaluating empirical research. The difficulty is not that experiments can have serious flaws, although they do, but rather that scientists have yet to come up with a single non-tautological definition of *what causality in fact is*. The social sciences are struggling not only with the estimation of uncertainty in methods, research design and the amount of data, but with knowing what it is exactly that we aim to accomplish with all this endeavor.
+
+By making this argument, I am not calling for the abandonment of positivism and a whole-hearted embrace of agnosticism towards empirical research. While I will present some theories from the philosophy of social science in this paper, I do not think that it would be fruitful or necessary for social scientists to abandon research for philosophical inquiry, no matter how intellectually stimulating. Causality should be the goal of the social sciences, but a dash of realism about how much we know about where we are going would help in adjudicating between competing research traditions. 
+
+To produce a helpful framework, I reduce the literature on causality to three basic theories of causal inference that closely match the variety of research designs social scientists employ. I define these as follows: the counterfactual theory of inference (which I also link to the closely-related manipulationist theory), the Humean theory of inference, and the mechanistic theory of inference. Each of these theories can be seen as a kind of *silver* standard, incorporating much of what we mean by the term causal, but failing at the same time to encompass all of what we mean (if we could somehow express it). Social scientists have been operating in these paradigms or moving between them without necessarily being aware of the distinction, but a greater appreciation for the diversity of meaning in causality would help explain our continued diversity in research practices. Pretending that this uncertainty does not exist--that there exists enough gold to supply our research economy--yields distortions and inefficiencies in the research process as we do not take advantage of all possible avenues of inquiry.
+
+I also propose that a helpful, possibly unifying, criterion for social science research is the concept of reducing entropy. Entropy is a concept widely used in the natural sciences and has important applications in statistics in the form of information theory. It is more of the latter that I turn to as an aid for evaluating the payoff of research designs across the three silver standards. Entropy has its own ambiguities of meaning, unfortunately, but it does provide a relatively neutral framework for discerning what kind of research will reduce entropy in our understanding of social relations.
+
+In this paper I first review recent debates and dialogues on causality in the social sciences, a necessarily abbreviated endeavor. I then provide a concise account of the three silver standards proposed in this paper, and also show how these theories have been explicitly or implicitly employed by scholars in different research fields. I then bring in the concept of entropy and show how it can help when trying to decide between research designs. 
+
+## The New Intellectual Battlefield: Causality
+
+The credibility revolution of the past fifteen (or so) years has produced a sea change in how political scientists, economists and increasingly others conceive of research and measure its success. The theories behind the credibility revolution date back to the 1970s or even earlier [CITE RUBIN, FISHER], but for whatever reason, the practice of formal randomized experiments did not take off in political science until the 2000s. More recently, a second credibility revolution has swept through social scientific disciplines that long employed experiments, particularly psychology. This second revolution has questioned the use of discretized decision rules, i.e. p-values, as a source of inferring causal inference. This revolution has emphasized pre-registering research questions and sharing data so that conclusions can be replicated or reproduced. 
+
+While this second revolution has reached political science, especially in the emerging norm of preregistration, the first revolution has barely reached its zenith. As of this writing, many if not most political science and economics departments have causal inference as a central part of their methods instruction, although that is still a recent phenomenon, and familiarity and comfort with counterfactual causal inference varies widely across the discipline. Increasingly, presenting experimental results, whether in labs, the field or surveys, is no longer considered remarkable or ground-breaking, and to some it has become the standard for what social science research should be.
+
+There remain, however, significant pockets of resentment at the success of the experiment in political science, though many of them occur in private conversations using epithets like "barefoot experimentalist" and "causal inference Taliban."" In particular, the success of experiments appears to endanger the role of observational studies, whether qualitative or quantitative, as these studies can never meet the stringent criteria imposed by their randomized kin. As a result, previously popular methods like large-N time-series cross section models have come under criticism for failing to either estimate *average treatment effects* (ATEs), the causal criterion of randomized inference, or to account for missing variables and over-time dynamics. 
+
+This tension has boiled over into published debates, most recently in a remarkably broad and heated discussion in the August issue of *Social Science and Medicine*. On the one side, @deaton2018 argue that the emphasis on RCTs as a cure-all for causal inference is over-blown because researchers often ignore the known limitations of their samples by reference to randomization. While some support @deaton2018, including @gelman2018 and @sampson2018, others argue that recent research on understanding treatment heterogeneity and the application of experimental results to novel problems mitigate Deaton and Cartwright's concerns [@imbens2018; @ioannidis2018]. This brewing dispute has all the hallmarks of a noteworthy battle of the minds, but it is questionable as to whether all the discourse and us-vs-them framing will necessarily help applied empirical researchers.
+
+The main problem, I maintain, underlying these disagreements is an acute problem for social scientists: while we all want to obtain causal knowledge, we do not in fact know what causal knowledge is. At the very least, we struggle to define it precisely in a way that is non-tautological. Existing research shows that causal thinking is deeply connected to human thought processes so we can not escape from it. Perhaps because it is so foundational to how we process the world, we also have trouble encompassing precisely what we mean when we say a relation is causal versus spurious. 
+
+The difficulties in defining causation are nothing new as it has been a subject of intense philosophical debate for several centuries. Rather, my point is that it is easy for scientists to ignore this source of uncertainty in discussions of causal inference, which leads to unrealistic standards for what a particular framework of causality can achieve. Indeed, some causal paradigms can become so entrenched that adherents no longer see them as paradigms but rather as the definition of the subject. It is when this conflication is reached--a certain methodology is defined as the gold standard--that inevitable distortions arise in deciding to pursue certain research streams. 
+
+To establish this important though often-overlooked discrepancy, I briefly examine what I call the three silver standards of causality: counterfactuals and manipulations, correlational, and mechanistic inference. The intention of this overview is not to be exhaustive, as that would likely require a book-length treatment, but rather to emphasize how each of these causal paradigms captures a part, though not all, of what we mean by the term causality. 
+
+
+
+## Counterfactuals and Manipulations
+
+While it has not been the dominant framework in the social sciences for a long time, manipulationalist and counterfactual causal inference has become the go-to reference for understanding causal relations. I consider these two paradigms, though conceptually distinct, to be grouped together as they are both fundamentally discussing the same thing. In brief, the counterfactual inference imagines an alternate world in which the causal factor is not present, while the manipulationist account emphasizes human (or possibly divine) efforts to force causal factors to take on certain values. 
+
+While counterfactual causal thinking has been around for some time [cite Woodward], it has received its strongest expression in the literature associated with Rubin and Holland. We are told to imagine that a unit $i$ could exist in one of two states: a treatment state $Y(1)$ and a control state $Y(0)$. Unfortunately, we cannot observe both states, which is known as the fundamental problem of causal inference. While this fundamental problem would seem to be just that, a fundamental problem, instead Rubin argued that randomly selecting units and randomly assigning them to receive the treatment or not would provide an average estimate of this counterfactual difference:
+
+
+$$
+\hat{ATE} = E[Y(0|D=1) - Y(1|D=0)]
+$$
+
+The reasoning is straightforward: if treatments are assigned randomly to subjects, then if we have a sufficiently large subject pool and take the average between the treatment and control groups, we will actually have an estimate of the average value of all of those *individual* counterfactuals. This brilliant formulation is what launched the "credibility revolution" and compels widespread support for RCTs across the social and biomedical sciences.
+
+It is not necessary, of course, to use randomization within a counterfactual or manipulationist theory of inference: it is simply more difficult to know whether an intervention affected the outcome. @pearl2000 significantly expanded the definition and possibilities of manipulationist inference by his introduction of network relations in the form directed a-cyclic graphs to stand for causal relationships. Pearl's main insight is that formulations of causal relations based on conditional probabilities alone cannot capture all of what is meant by cauality because variables can be connected to each other without having any causal relationship. By providing a very rigorous definition to the notion that correlation and causation are separate phenomenons, he came up with a framework that extends beyond manipulationist inference even though he assumes in his work that manipulation and causation are identical.
+
+In brief, to summarize Pearl's approach to causality, imagine that there are a set of variables $Z$, and a variable of interest $X$, all of which jointly cause an outcome $Y$. To come up with a directed acyclic graph (DAG), all of the variables that are causal factors must be pointing towards the outcome $Y$ or on some chain to $Y$, as in the following chart:
+
+```{r dag1,echo=FALSE,warning=FALSE,fig.cap='Confounded Example of a Directed Acyclic Graph',message=FALSE}
+unctrl <- "X Y Z"
+ctrl <- "X"
+
+# paths
+meas <- "X -> Y     
+          Z -> X"
+unmeas <- "Z -> Y "
+makeDAG(dagname='example.png',filetype='png',
+        text.nodes=unctrl,
+        solid.edges = meas,
+        dashed.edges=unmeas,
+        embed=T)
 ```
 
-## Including Plots
+Because all the variables are pointing in the same direction, the graph is acyclic, or it can never return to its origin. This stipulation reflects Judea's view of causality as involving manipulation: in one time period, an action was taken, and in the following time period, a response was observed. In fact, a causal relation is defined explicitly as manipulating one of the causal factors such that there only remains one arrow between it and the outcome, such as be removing the association between $X$ and $Z$:
 
-You can also embed plots, for example:
+```{r dag2,echo=FALSE,warning=FALSE,fig.width=5,fig.cap='Identified Example of a Directed Acyclic Graph',message=FALSE}
+unctrl <- "Z Y"
+ctrl <- "X"
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+# paths
+meas <- "X -> Y
+          Z -> Y"
+
+makeDAG(dagname='example.png',filetype='png',
+        text.nodes=unctrl,
+        box.nodes=ctrl,
+        solid.edges = meas,
+        embed=T)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+This manipulation--forcing $X$ to a specific value--removes the influence of $Z$ and the "backdoor path" by which changes in $Z$ cause changes in both $X$ and $Y$. By visualizing these relationships, and providing an algorithm to convert the graph into observable probabilities, Pearl did a great service to causal inference practicioners. Yet even as powerful as his framework is, it does not capture all of what we mean by causality, at least so far as Pearl defines it.
+
+## Correlation May Equal Causation
+
+Although at one time it was the dominant approach to causal inference in the sciences, the Humean conception of "constant conjunction" has fallen out of fashion. Hume supposed that we could not know why any two events occurred together and to infer any of this knowledge was a fallacy. Rather, all we could know was whether events tended to occur together. This correlational theory of inference was codified by Pearson and has remained a staple of statistical analysis: checking for "associations" between variables, or looking for risk factors, as in medicine [@pearl2000, 341]. While today's statistical education emphasizes that correlation does equal causation, that tendency has not always been as strong among statistical practicioners. 
+
+The reason that correlations still matter even if we do not know the direction of causality or the mechanisms behind the correlation is because causation *does* imply correlation. We may not be able to record the association between two variables due to confounders, but if a causal relationship exists, then we can infer that at some level, somewhere, correlation must be happening. Conversely, if we can prove that two variables are perfectly uncorrelated, we have reasonable evidence that a causal relationship does not exist. Again, this evidence is not a smoking gun or a gold standard as there remains the possibility of an unobserved variable affecting both. 
+
+For this reason, observational analysis does have a close relationship to causality. When we observe a correlation among human-generated outcomes, we know that a causal process is likely at work, although we cannot rule out that the correlation was due to chance. Statistical methods only give us a way to quantify the uncertainty in estimating the correlation, not in determining whether the association is "truly" causal. But if we abandon the notion that there is a gold standard for causality, then observational analysis, or searching for correlations, still matters for establishing causality even if we cannot learn everything we want to learn. 
+
+While some are willing to dismiss traditional statistical methods without randomization or at least manipulation of treatments, entire fields of science are based on purely observational analysis, including astronomy, forensic anthropology, archaeology, and so on. We have never manipulated giant bodies of gas to force them to explode, but we are still fairly sure what supernova are. The reason for this is that as a silver standard, observational analysis does work if ideal conditions are met, as is true of randomized experiments. In particular, observational methods approach--though never fully answer--causal questions when we have data on all the variables that could be relevant to the outcome, the data closely match the research question, and we have as much data as we might want. 
+
+Thinking of observational research in this sense explains why astronomy has been so successful without experiments: copious data. Researchers also often use syllogisms to interrogate models (cite Gelman) and reason their way through situations where they cannot collect all the data they want, such as astronomists' disputes over the location and number of planets. If an orbit reflects certain unstabilities, then a planet must exist even if there is no direct evidence for it. 
+
+There are situations in the social sciences where ideal conditions for observational analysis are met. Like with experiments, these situations are not always the most interesting. One oft-cited example is the correlation between smoking and lung cancer. Another, although it is not often expressed this way, is the application of polling aggregation models to predict electoral outcomes. While these models are not perfect and sometimes over or under-predict, the underlying causal process is usually undisputed: if a person is asked who they will vote for the day before the election, they will very likely cast a vote for that person in the ballot box. In this situation, there is plently of data, we can measure most of what we want to know, and the measures are fairly direct of the underlying outcome. 
+
+
+
+## What Lies Beneath: Mechanistic Causation
+
+While the previous two approaches are often contrasted as the only ways of thinking about causality in the sciences, there is a third philosophy that is gaining traction among qualitative researchers. There has been much work in political science in recent years on establishing how case study research can identify mechanisms that link causal variables. Again, instead of considering this line of inquiry to be a subsidiary issue to the question of causality, I propose that mechanisms are a part of what we mean by causality, and hence are their own silver standard. When ideal conditions are met, we can infer causality with reasonable, though never perfect, confidence. 
+
+Several definitions of mechanisms have been proposed in the literature. I use for this paper the standard of @Waldner2013 that mechanisms are invariant processes underlying the causal variables. The example he uses is very instructive: the person who invented the mechanisms through which aspirin relieved heart pressure receved a Nobel Prize in 197-, decades after it had been conclusively established that aspirin had these lasting effects. This Nobel prize is puzzling under either the observational or experimental approaches to causality: if the strength of association was indisputable and random assignment had provided an estimate of all possible counterfactuals, then how could this person receive a Nobel prize for an entirely unrelated discovery?
+
+The answer is that when humans conceive of causality, we imagine there to be some kind of process linking cause and effect. Defining exactly what this is process is can be diffult, but the invariant standard is a helpful step. We are looking for processes that are so low-level that they operate similarly in all contexts. In a social scientific setting, we might think of basic emotions like fear, anger and happiness, or the rational actor model. 
+
+@waldner2013 theory of causation is particularly useful in this paper as it ties mechanistic thinking of causation back to DAGs by labeling the edges. For example, given the associations mentioned previously, we could place labels on the edges that are mechanisms. Importantly, *these mechanisms are not variables*, as causal mediation analysis pre-supposes. Rather, they are root processes that are at the limit of our observational capacity and are so fundamental as to be nearly determinate. Mechanistic causation is a distinct facet or dimension of causation along with observational and manipulationist inference.
+
+In addition, like the other two silver standards, under ideal conditions it can provide strong evidence of causality. In the social sciences this entails collecting exhaustive evidence on a person's decision-making (or a group of people's decision-making). @Waldner2013 proposes that, for a given causal graph, each node must be both necessary and sufficient for the one that follows it, i.e., that the process by which the event occurred must be fully established using mechanisms. Process-tracing methodologists refer to the idea of a "smoking gun" as the kind of evidence that establishes causality within this framework, such as obtaining a private diary of an important leader that describes in detail why they made their decisions. These ideal conditions are relatively rare, but like experimental and observational approaches, we can have confidence in inferring *a kind* of causality when we have all the information we might want about how $X$ changed into $Y$.
+
+For example, imagine if we wanted to know whether the U.S. bombing of Dresden influenced Hitler's strategies during World War II. In a qualitative framework, we could obtain a smoking gun if we had a private diary by Hitler's own hand that described verbatim his thoughts on the U.S. bombing of Dresden and whether or not he shifted war tactics in response to the bombing. If we then also had detailed evidence, such as transcripts of meetings and official orders, carrying out these changes in tactics prescribed in the journals, then we could state with a high degree of confidence that we know that the bombing of Dresden had a *causal* impact on Hitler's decision-making.
+
+Of course, qualitative inference does lend itself to single-act causation as opposed to establishing general trends between variables. However, to the extent that the variables under study are the same across conditions--i.e., have high external validity--then we could presume that our knowledge of the mechanisms linking these variables is similarly invariant. If we can establish what the mechanisms are then we can be more confident that the variables are causally associated in addition to any relationship we establish using observational or experimental statistics.
+
+## Synthesis
+
+> “Of course it is happening inside your head, Harry, but why on earth should that mean that it is not real?”
+> - Professor Albus Dumbledore from J.K. Rowling's *Harry Potter and the Deathly Hallows*
+
+The point of presenting each of these ways of inferring causality is to promote a realist conceptualization of causal inference for the social sciences. It could well be that there exists only one standard or definition of causality, but even this cursory reading of research and theory suggests there is much more to the concept than we can contain within one mathematical or empirical framework. Rather than dismiss any one of these research conceptions, my intention is to show each of them captures a distinct part of what humans mean by causality. Causality itself has no true definition other than what we give it, and as extensive research has shown, it is not easy to conclusively identify the way humans reason with any of the theories presented [CITE psych paper].
+
+This latent source of uncertainty over causality is never discussed in the papers cited above regarding the study of causal processes. Rather, frameworks are presented as a way of defining causality, but over time the framework becomes synonymous with the term. In common parlance in the social sciences, a "causal inference" model implies either a randomized control trial or the usage of certain statistical methods that can be expressed using Rubin's counterfactual notation [CITE RDD, ETC]. This slippage in terminology puts the cart before the horse: causality does not inherit from counterfactuals; rather, counterfactuals arose as a way of expressing what is meant by causality. 
+
+This realist point is not made to belittle or dismiss the voluminous research on the science of philosphy, causation and statistical science. Over time we have developed new ideas and frameworks to express causality. Judea Pearl's work is a useful way to express causal relations, especially in manipulationist terms. Furthermore, cross-fertilization of ideas can create new methods of analysis, such as the application of structural causal models and counterfactual theories of inference to traditional observational spatial and time-series cross-section models [CITE EGAMI AND IMAI AND KIM]. Over time, we have learned more about what we mean by the word causal and continued research should help us more astutely understand the inferences we make and the reasons why we make them. 
+
+Nonetheless, causality will remain a latent concept: we cannot observe it, and our uncertainty over the term will never completely go away. Permitting this remaining uncertainty, and allowing the use of the word "causal" in more settings than just randomized control trials, will help avoid mis-perceptions and researcher frustration. Ultimately, by understanding that we are trying to find the answer to a question we cannot fully form, we will be a bit more charitable in assessing our incomplete yet very important frameworks for doing research.
+
+## Entropy as a Neutral Standard
+
+Rather than end with a paen to "methodological pluralism", this paper also proposes a framework for critically thinking about the role and suitability of applying these causal models to real research questions. To do so I present the concept of entropy as a holistic metaphor for understanding our uncertainty about causal relations. Entropy has been widely used to describe physical phenomena such as heat transfer, although social scientists are more familiar with statistical or Shannon entropy, which is also the way I employ the term. In general, entropy describes the decay of a system, such as gas molecules moving farther and farther apart to fill a sphere. Statistical entropy applies the same concept to probability, providing a measure of the "information" in a random variable. In general, as probabilities become more equal or uniform, entropy increases, whereas when probabilities become more degenerate or peaked, entropy decreases. 
+
+Shannon entropy $S$ is defined as a simple formula for any set of probabilities $p_i \in I$:
+
+$$
+S = - \sum_{i=1}^I p_i \text{log}p_i
+$$
+
+The formula is unfortunately not intuitive, but its appeal is in that it meets certain qualifications that we would want to know for determining an entropy measure for probability, including that it increases as it moves away from neutral probabilities (such as 0.5) and reaches a maximum at 0 when a probability is equal to 1. The units of entropy are determined by the type of logarithm employed. Because I am interested in entropy as a framework rather than with particular empirical application, I use an unconventional logarithmic base of 1.01:
+
+$$
+S = - \sum_{i=1}^I p_i \text{log}_{1.01}p_i
+$$
+
+A base of 1.01 means that every unit increase in entropy equals a one percent increase in entropy. Figure \@ref(fig:dement) plots show entropy calculations for probability distributions with varying levels of total uncertainty or spreadout-ness. What is important to note is that all of these distributions have the same expected, or average, value, but are nonetheless very different statements about underlying uncertainty.^[Because these are continuous distributions and entropy is a measure of discrete random variables, the continuous variates were first binned and then converted to probabilities.] Roughly speaking, the uniform distribution has 100 percent more entropy than the normal distribution, which has 30 percent less entropy than the student's T distribution. These plots show why entropy is a powerful heuristic: it captures our sense of how certain we are of a particular probabilistic statement that is independent of distributional choices.
+
+
+```{r dement, fig.cap="Examples of Entropy Calculations"}
+plot_d <- data_frame(Distribution=rep(c('Uniform',
+                                        'Gaussian',
+                                        "Student's T"),
+                                      each=1000),
+                     Variates=c(runif(1000,min=-10,max=10),
+                                rnorm(1000,mean = 0,sd=2),
+                                rt(1000,3)))
+my_ent_func <- function(mydist) {
+  counts <- discretize(mydist,100,r = c(-10,10))
+  counts_p <- counts/sum(counts)
+  # need to drop zeroes
+  -sum(counts_p[counts_p>0]*log(counts_p[counts_p>0],1.01))
+}
+plot_d <- group_by(plot_d,Distribution) %>% 
+  mutate(Entropy=paste0('Entropy = ',round(my_ent_func(Variates),0)))
+# plot the density in a facet wrap
+plot_d %>% 
+  ggplot(aes(x=Variates)) +
+  geom_density(alpha=0.5,fill='blue',colour=NA) +
+  facet_wrap(~Distribution,ncol=2,
+             scales='free_x') +
+  geom_text(aes(label=Entropy),x=0,
+                            y=0.2,
+            fontface='bold',
+            size=3) +
+  theme(panel.grid = element_blank(),
+        panel.background = element_blank(),
+        strip.background = element_blank(),
+        strip.text = element_text(face='bold'))
+```
+
+While entropy has been applied successfully to many statistical problems, my intention in defining it here is to think of it as a way to understand the relative value of the causal paradigms previously discussed. Ultimately, the goal of the social sciences should be to reduce entropy whenever possible in terms of our understanding of how the social world operates. To do so, we have to produce new propositions that explain human behavior and allow us to make judgments about what is more or less likely to occur in the future. 
+
+A principle that summarizes this endeavor is that of maximum entropy. @jaynes2003 defines the maximum entropy principle as always preferring a distribution of higher entropy conditional on including all known facts in the distribution. For example, suppose we wanted to predict stock market prices. Lacking any special knowledge into stock prices, we would want our uncertainty to reflect the fact that all we have to analyze are the movements of individual stocks over time--we would want to maximize entropy, or uncertainty, given the data we have. But if we knew that the Federal Reserve intended to increase interest rates, we could include that information in our model and consequently produce a lower entropy distribution. 
+
+In other words, we want to learn new facts about the world such that we reduce our entropy in understanding causal relations. At the same time, we want to maximize entropy given what we know to reduce blind spots and over-confidence. Causal inference involves striking this delicate balance between assuming too much and assuming too little. 
+
+This framework helps resolve some inconsistencies in how models are incorporated in the social sciences. On the one hand, more complex models are seen as more sophisticated and thus more likely to be true. On the other hand, there has been considerable push back at models that appear to be baroque and less easy to explain than good old faithful ordinary least squares (OLS) regression. Maximum entropy helps explain these mixed feelings: we should prefer more complex models over simple models because our over-arching aim should be to reduce entropy, and more complex models have less entropy. On the other hand, we do not want to reduce entropy without a good reason lest we over-state our certainty.
+
+To use entropy to understand causal paradigms, I return to Pearl's causal diagrams. My intention is not to suggest that Pearl's theory is the final take on causality, but rather because network relations are deeply intuitive representations of human thought patterns. As such, they are a helpful starting block for comparing very different representations of causality. 
+
+Let us imagine that we are entering a foreign world and we want to understand social behavior. We have almost no prior knowledge of how people on this foreign planet relate to each other. All we can do is come up with a list of plausible factors, such as those that might affect leader selection. Given our experience of such occurences on earth, we come up with the following list of variables: political ideology (I), economic benefits (E), ethnic affinity (A), leader personal qualities (Q), and the risk of conflict (C). We can think of these variables as nodes in a network all connected with the outcome of leader selection (Y) as is shown in Figure \ref@(fig:netgraph).
+
+```{r netgraph}
+mat <- matrix(rep(1,36),6,6)
+row.names(mat) <- c('I',
+                    'E',
+                    'A',
+                    'Q',
+                    'C',
+                    'Y')
+colnames(mat) <- c('I',
+                    'E',
+                    'A',
+                    'Q',
+                    'C',
+                    'Y')
+diag(mat) <- 0
+mat_edge <- matrix(rep('frac(1,36)',36),6,6)
+netobj <- network(mat,directed=T)
+set.edge.value(netobj,'Probability',mat_edge)
+
+ggplot(netobj, aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_edges(color = "grey50") +
+  geom_nodetext(aes(label=vertex.names),
+                size=7) +
+  geom_edgetext_repel(aes(label=Probability),parse = T,
+                      label.size=NA) +
+  theme_blank()
+
+```
+
+This graph is a far cry from the neat, tidy DAGs of Pearl's work. In fact, some of his most elegant proofs would not apply as there is no beginning nor end to the graph despite the fact that the relations between nodes are directed. Each edge is labeled with the expected probability that a link exists, with each one labeled $\frac{1}{36}$ to represent our current ignorance, i.e., any link between any of the nodes is equally likely at this point.^[There are a total of 36 possible edges in the network because each variable could be the cause of any other variable.] While this figure is extreme, it comes closer to the actual state of social science research, where substantial uncertainty exists over even defining the space within which causality happens. 
+
+Given the previous discussion, the question now is to reason about which method of causal inference to apply to Figure \@ref(fig:netgraph). The easiest way to answer this question, and one often chosen, is simply to choose whichever method best fits the researcher's skills and experiences. While very practical, it poses a chicken-and-egg problem, and only shifts the question to which paradigm researchers should invest in to gain experience and skills. 
+
+I propose that a better heuristic is to ask what would reduce entropy in the causal graph. There are very complicated entropy statistics for graphs, but to simplify matters I apply the entropy formula to each edge probability in Figure \@ref(fig:netgraph):
+
+$$
+-\sum_{i=1}^{36} \frac{1}{36} \text{log}_{1.01} \frac{1}{36} = 360
+$$
+
+We start with the considerably high number of 1254. At this amount of entropy, we are not likely to be wrong, but we also cannot say much of value about our study of this foreign planet's society. Initially, let us consider a choice between an experimental and an observational analysis. Suppose than with an experiment we can determine directly the probability of the connection between ethnic affinity (A) and leader selection (Y).^[We ignore for the time being the difficulty in enacting these research designs.] If we pull off a quality experiment, we can double our confidence in the link from A to Y and change our assessment of the link from Y to A (reverse causality) to 0. Then we can re-calculate our entropy measure, which shows a decrease in entropy of 4 percent:
+
+$$
+-[(\sum_{i=1}^{34} \frac{1}{36} \text{log}_{1.01} \frac{1}{36}) + \frac{2}{36}\text{log}_{1.01}\frac{2}{36}] = 356
+$$
+
+However, suppose that if we conducted an observational data analysis, we could increase or decrease the probability of the links between leader selection and ecoomic benefits (E), leadership quality (Q), ideology (I), ethnic affinity (A) and conflict (C) from $\frac{1}{36}$ to $\frac{1.5}{36}$ while lowering the opposite links to $\frac{0.5}{36}$. That would result in the following change in entropy:
+
+$$
+-[\sum_{i=1}^{26} \frac{1}{36} \text{log}_{1.01} \frac{1}{36} + \sum_{J=1}^{5} \frac{1.5}{36}\text{log}_{1.01}\frac{1.5}{36} + \sum_{K=1}^{5} \frac{0.5}{36}\text{log}_{1.01}\frac{0.5}{36}] = 356
+$$
+In other words, in this toy example, the observational and experimental studies would have similar effects on the entropy of the total system *even though they made very different changes to the underlying causal structure*. Intuitively, we can learn a lot from establishing a specific causal link in a specific direction with a high degree of certainty, but we can also learn a lot from examining associations between variables, even if we cannot arrive at conclusive predictions. The point of this exercise is not to suggest that observational methods are better than experimental methods, but rather that the value of each depends on the nature of the causal problem, and it is *not* always the case that experiments produce more causal knowledge than observational studies.
+
+
+
+
+
