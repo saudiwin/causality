@@ -7,7 +7,7 @@ output:
     includes:
       in_header: preamble.tex
 abstract: 'I argue that social scientific practice would be improved if we abandoned the notion that a gold standard for causal inference exists. Instead, we should consider adopting three *silver* standards relating to distinct theories of causation: experimental approaches with the counterfactual theory, large-N observational studies with Humean causation, and qualitative process-tracing with mechanistic causation. Under ideal conditions, any of these three theories provide strong evidence of an important part of what we mean by causality. I also discuss the use of statistical entropy, or information theory, as a possible yardstick for evaluating research designs across the silver standards. The concept of entropy shows that the weight given to any of these approaches depends on the relative reduction in our uncertainty of a given causal system.'
-bibliography: "C:/Users/bobku/Documents/R_projects/firmbook/BibTexDatabase.bib"
+bibliography: "C:/Users/rkubinec/Documents/firmbook/BibTexDatabase.bib"
 toc: false
 ---
 
