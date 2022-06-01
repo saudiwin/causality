@@ -1,0 +1,18 @@
+---
+title: 'Getting Off the Gold Standard for Causal Inference'
+date: "March 1st, 2020"
+author: |
+  | Robert Kubinec
+  | New York University Abu Dhabi
+output: 
+  bookdown::pdf_document2:
+    includes:
+      in_header: preamble.tex
+
+abstract: 'I argue that social scientific practice would be improved if we abandoned the notion that a gold standard for causal inference exists. Instead, we should consider the three main inference modes--experimental approaches and the counterfactual theory, large-N observational studies, and qualitative process-tracing--as observable indicators of an unobserved latent construct, causality. Under ideal conditions, any of these three approaches provide strong, though not perfect, evidence of an important part of what we mean by causality. I also present the use of statistical entropy, or information theory, as a possible yardstick for evaluating research designs across the silver standards. Rather than dichotomize studies as either causal or descriptive, the concept of relative entropy instead emphasizes the relative causal knowledge gained from a given research finding.^[I thank David Waldner, Michael Poznansky, Kevin Munger, Andrew Gelman and Kosuke Imai for helpful comments on this manuscript.] **Word Count: 9,823 words**'
+bibliography: "/Users/rmk/firmbook/BibTexDatabase.bib"
+toc: false
+fontsize: 12pt
+fontfamily: times
+---
+
