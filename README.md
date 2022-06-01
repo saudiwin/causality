@@ -1,0 +1,1 @@
+This repository contains the Rmarkdown file necessary to reproduce "Getting Off the Gold Standard: A Holistic Approach to Causal Inference with Entropic Causal Graphs" by Robert Kubinec. Please see the file `gold_standard_covid.Rmd`. The PDF version with a doi can be found at: https://osf.io/preprints/socarxiv/a492b/.
