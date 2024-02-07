@@ -514,14 +514,14 @@ ggdag(rd) + theme_tufte() +
 The aim of this case study is not to adjudicate this original claim, but rather to use their causal graph as a basis for evaluating possible research studies using causal entropy. This causal graph is far more involved than the previous one, and as a result the conditional probability tables are more complex. To simplify matters, we will focus on the probability of authoritarian resilience ($A$) conditional on British policy ($B$) and survival $S \in \{\text{High},\text{Low}\}$:
 
 |                              | $A = \text{Endure}$ | $A = \text{Democratize}$ |
-|-----------------------------|-------------------|------------------------|
+|------------------------------|---------------------|--------------------------|
 | $B = \text{Intervention}$    | 0.5                 | 0.5                      |
 | $B = \text{No Intervention}$ | 0.5                 | 0.5                      |
 
 : $Pr(A | B , S = \text{Low})$
 
 |                              | $A = \text{Endure}$ | $A = \text{Democratize}$ |
-|-----------------------------|-------------------|------------------------|
+|------------------------------|---------------------|--------------------------|
 | $B = \text{Intervention}$    | 0.5                 | 0.5                      |
 | $B = \text{No Intervention}$ | 0.5                 | 0.5                      |
 
@@ -600,7 +600,7 @@ library(dagitty)
 library(ggdag)
 ```
 
-I further define a convenience function for calculating entropy given a list of vectors or tables of conditional probabilities. The function's arguments include a list of each conditional probability table, the list of values for each variable  and the ability to set the base of the logarithm used, which defaults to 1.01.
+I further define a convenience function for calculating entropy given a list of vectors or tables of conditional probabilities. The function's arguments include a list of each conditional probability table, the list of values for each variable and the ability to set the base of the logarithm used, which defaults to 1.01.
 
 ```{r entropy, echo=TRUE}
 entropy <- function(x,base=1.01) {
@@ -680,7 +680,7 @@ We can then use the `ggdag` package to visualize the causal graph:
 ggdag(dag)
 ```
 
-To be able to calculate entropy, we need to create conditional probability tables that together make a joint probability distribution for the outcome, $Y$. The Markov property of causal graphs means we only need to consider each variable's immediate ancestors when doing so. If our outcome is $Y$, then we need to estimate the conditional distribution of $Pr(Y|T,Z)$ as these are $Y$'s two ancestors. We then need to make conditional probability tables for any of $Y$'s ancestors that have an arrow going into them, which in this case is only $T$, so we also need $Pr(T|Z)$. Any variable that does not have arrows going into it, and is connected to $Y$, needs to be included as an unconditional probability, or $Pr(Z)$. 
+To be able to calculate entropy, we need to create conditional probability tables that together make a joint probability distribution for the outcome, $Y$. The Markov property of causal graphs means we only need to consider each variable's immediate ancestors when doing so. If our outcome is $Y$, then we need to estimate the conditional distribution of $Pr(Y|T,Z)$ as these are $Y$'s two ancestors. We then need to make conditional probability tables for any of $Y$'s ancestors that have an arrow going into them, which in this case is only $T$, so we also need $Pr(T|Z)$. Any variable that does not have arrows going into it, and is connected to $Y$, needs to be included as an unconditional probability, or $Pr(Z)$.
 
 We can check and see which variables we need to include by identifying the ancestor variables of Y with the `parents` function from `dagitty`:
 
@@ -715,7 +715,6 @@ For $Pr(Z)$, we will have to create a data frame manually as this probability is
 joint_table3 <- tibble(Z=c("Yes","No"),
                        wt=c(0.9,0.1))
 ```
-
 
 Given these conditional probability tables and one unconditional probability distribution, we can then quickly estimate the entropy of the causal graph by passing all of the tables and data frames as a list:
 
