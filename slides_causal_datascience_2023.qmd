@@ -1,0 +1,167 @@
+---
+title: "Not Causal or Descriptive But Some Secret, Other Thing"
+subtitle: "Entropy as a Criterion for Causal Learning"
+author: "Robert Kubinec<br>Division of Social Sciences<br>New York University Abu Dhabi"
+date: last-modified
+format:
+  revealjs: 
+    theme: sky
+editor: visual
+self-contained: true
+---
+
+## Causal Vs Descriptive
+
+::: incremental
+-   The causal inference revolution created a profound respect for randomized control trials as the "gold standard for causality" (Rubin 1974).
+-   Research can only be considered causal if it is either randomized or considered "as-if" randomized (Imbens and Rubin 2015; Little and Rubin 2002).
+-   This creates a hierarchy between research that is causally identified and not causally identified, i.e., descriptive (Gerring 2012; Imai, King and Stuart 2008).
+:::
+
+## Problems with the Gold Standard
+
+::: incremental
+-   RCTs can fail. Low power, measurement error, and post-hoc analyses can all undermine theoretical causal identification (Gelman and Loken 2013; Nosek et al. 2018).
+-   Scholars continue to perform observational analyses, sometimes arguing these are identified using "quasi-experimental methods."
+-   Fierce debate about the validity of assumptions in these methods (Kahn-Lang and Lang 2018; Caughey and Sekhon 2011; Rambachan and Roth 2020).
+:::
+
+## Silver Standards
+
+::: incremental
+-   Maybe causality can't be reduced to any one particular approach, including potential outcomes.
+-   Imagine instead we have three "silver" standards:
+    -   Counterfactual/manipulationist inference
+
+    -   Humean/correlational inference
+
+    -   Mechanistic inference (qualitative)
+-   All of these methods provide partial causal information and none exclusively provide all causal information except under ideal (unrealistic) conditions.
+:::
+
+## Baseline Assumption: Causal Graphs Exist
+
+![](images/Screen%20Shot%202022-12-27%20at%203.20.36%20PM.png){fig-align="center"}
+
+## How Can We Compare Across Inference Modes?
+
+::: incremental
+-   I present entropy as a concept for determining the relative causal knowledge gained from a research design.
+-   Entropy analysis shows any silver research design *can* increase causal knowledge.
+-   Causal identification is sufficient but not necessary for causal learning.
+:::
+
+## Shannon Entropy
+
+```{=tex}
+\begin{equation}
+\label{shannon}
+H = - \sum_{n=1}^N p_n \text{log}p_n
+\end{equation}
+```
+-   For a given set of N elements of a vector that sums to 1 (i.e., a discrete probability distribution).
+-   Log of 1.01 ensures that each unit increase in entropy = 1% increase.
+
+## What Does Entropy Look Like?
+
+![](images/image-1693774548.png){fig-align="center"}
+
+## Entropic Measure of Causal Graphs
+
+```{=tex}
+\begin{equation}
+\label{entgraph}
+H(P(v)) = - \sum_{i=1}^N P(x_i | pa_i) P(pa_i) \text{log}P(x_i | pa_i) P(pa_i)
+\end{equation}
+```
+-   Where $P(v)$ is the joint probability distribution of a graph $V$ with $N$ nodes.
+-   $x_i$ are the causal variables in the causal graph
+-   $pa_i$ are the immediate ancestors of the variables in the causal graph
+
+## Case Study: Vaccines
+
+![](images/Screen%20Shot%202023-11-06%20at%201.49.18%20PM.png){fig-align="center"}
+
+## Conditional Probability Tables for Vaccines
+
+::: columns
+::: {.column width="40%"}
+![](images/image-270138705.png) ![](images/image-232785221.png)
+:::
+
+::: {.column width="60%"}
+-   Where $I$ is for COVID-19 infection,
+-   $T$ is for vaccine,
+-   $Z$ is age, a confounder
+-   Joint probability of $I$:
+    -   $P(I,Z,T) = P(I|T,Z) P(T|Z)P(Z)$
+:::
+:::
+
+## Entropy of Various Research Designs
+
+::: incremental
+-   Entropy of null graph (uniform prior over joint distribution): 209
+-   Entropy of true graph: 124
+    -   Maximum entropy suggests we should never go below this bound.
+:::
+
+## Entropy of Various Research Designs II
+
+::: incremental
+-   Entropy of vaccine RCT--learn both $P(I|T)$ and $P(I|T,Z)$: 143.
+-   Remaining entropy: 143 - 124 = 19.
+    -   19% of entropy due to "observational" factors, i.e., selection of vaccine uptake by age.
+
+    -   Experiment can't learn this because arrow from $Z \rightarrow T$ removed via do operator.
+:::
+
+## We Can Include Mechanisms
+
+-   Define set $\Omega$ with value $\{\text{High}, \text{Low}\}$ for vaccine-neutralizing antibodies.
+
+-   Consider joint probability distribution conditional on $\Omega$:
+
+    ::: incremental
+    -   Null graph entropy 279, true graph entropy 156.
+
+    -   Experiment without learning about mechanism: 198.-
+
+    -   Experiment with learning about mechanism: 161.
+    :::
+
+## More Complicated DAG: Oil and Authoritarianism
+
+![](images/Screen%20Shot%202022-12-27%20at%203.45.27%20PM.png){fig-align="center"}
+
+## What To Do?
+
+-   In this case, observational analysis has only limited utility due to lack of data and the collider bias involving $O \rightarrow P \rightarrow S$.
+
+-   We can only get inference on the joint distribution, $Pr(A,P,S,B|O)Pr(O)$. Highly limited by variation in $O$.
+
+## Answer: Study Mechanisms (Process-Tracing)
+
+-   Possible to do inference on mechanisms involving the $B \rightarrow A$ pathway. Consider a null graph of equal probability for all nodes,
+
+    -   then demonstrating that $Pr(\Omega = \text{Interventionist} | B) = 0.9$
+
+    -   would equal a drop of entropy from 279 to 242.
+
+## Alternative: Experimental Inference
+
+![](images/Screen%20Shot%202022-12-27%20at%203.57.40%20PM.png){fig-align="center"}
+
+## Conclusion: Maybe We Can All Be Friends
+
+::: incremental
+-   By employing a specific criterion for causal learning, "descriptive" and "causal" are no longer binary categories but rather positions on a continuum.
+
+-   "Descriptive" studies can give causal knowledge (even if not causally-identified).
+
+-   R code available in paper for evaluating entropy on causal graphs.
+:::
+
+## QR Code
+
+![](qrcode_osf.io.png){fig-align="center"}
