@@ -5,8 +5,11 @@ date-format: long
 author:
   - name: Robert Kubinec
     corresponding: true
-    affiliation:
+    email: rkubinec@mailbox.sc.edu
+    affiliations:
       - ref: nyuad
+filters:
+ - authors-block
 affiliations:
   - id: nyuad
     name: University of South Carolina
@@ -27,9 +30,6 @@ format:
       - file: preamble2.tex
     geometry:
       - margin=1in
-    pandoc_args:
-      - '--lua-filter=scholarly-metadata.lua'
-      - '--lua-filter=author-info-blocks.lua'
 ---
 
 <!-- -->
@@ -360,9 +360,9 @@ q^* = \text{arg max}_{q \in Q} &U_i(B - c_q - (H(q) - H(P(v))))\\
 \text{s.t. }&U_i(\cdot) > 0
 \end{align}
 ```
-## Preregistration of a Entropy and Causal Graphs
+## Preregistration of Entropy and Causal Graphs
 
-To make this method useful, however, it is not necessary to solve for the optimal research design. It is only necessary to derive such a graph–or distribution of possible graphs–prior to undertaking a given study. Once the prior causal graph is known–ideally with probabilities over possible edges–then exploratory inference is permissible as false positive rates are known. If the causal graph is preregistered—even a causal graph with substantial uncertainty—, then any post-study analyses of the study's data will be valid so long as they are shown relative to the preexisting information included in the preregistration.
+To make this method useful, however, it is not necessary to solve for the optimal research design. It is only necessary to derive such a graph–or distribution of possible graphs–prior to undertaking a given study. Once the prior causal graph is known–ideally with probabilities over possible edges–then exploratory inference is permissible as false positive rates are known. If the causal graph is preregistered—even a causal graph with substantial uncertainty—then any post-study analyses of the study's data will be valid so long as they are shown relative to the preexisting information included in the preregistration.
 
 To demonstrate this point, consider Gelman's analysis of the so-called "garden of forking paths" that motivated much of the movement for preregistration [@gelman2013] in which we are concerned about obtaining an accurate test statistic $T(y)$ for a given dataset $y$. Gelman's concern was that the quantity reported in many papers is in fact a function of the actual data obtained (i.e., statistics to report depended on the outcome of the experiment), that is, $T(y,\theta(y))$ where $\theta(y)$ is a function that determines which statistics to report. Gelman's point is that test statistics are invalid if they are a function of the data that an analyst actually obtains. Preregistration is supposed to remove this endogeneity by stipulating the set of tests chosen $\theta$ ahead of time: $T(y,\theta)$ so that it has no relationship to the data an analyst obtains.
 
@@ -662,6 +662,14 @@ The principle of entropy provides one helpful framework by imagining the benefit
 # Competing Interests
 
 The author has no competing interests to declare.
+
+# Data and Code Availability Statement
+
+All data presented in this article is simulated from statistical distributions. All calculations shown in this article and referenced in the appendix are available from a public Github repository: <https://github.com/saudiwin/causality/>.
+
+# Ethics and Inclusion Statement
+
+This article solely makes use of data that is generated from simulated statistical distributions and as such there are no ethical issues to report in terms of human-derived data collection among marginalized populations.
 
 \newpage
 
