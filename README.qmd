@@ -30,9 +30,9 @@ library(CausalQueries)
 ```
 
 
-This repository contains the Quarto file necessary to reproduce "Holistic Causal Learning with Causal Graphs: A Credible Method for Study Design and Preregistration in the Social Sciences" by Robert Kubinec. Please see the file `prereg_causal_graph.qmd` for the main text of the article with embedded calculations of the entropy of causal graphs. The PDF version of the main article with a doi can be found at: https://osf.io/preprints/socarxiv/a492b/.
+This repository contains the Quarto files necessary to reproduce "Holistic Causal Learning with Causal Graphs: A Credible Method for Study Design and Preregistration in the Social Sciences" by Robert Kubinec. Please see the file `code/prereg_causal_graph.qmd` for the main text of the article with embedded calculations of the entropy of causal graphs. The PDF version of the main article with a doi can be found at: https://osf.io/preprints/socarxiv/a492b/.
 
-The appendix, which contains additional analyses, can be found in the document `secrete_other_thing_appendix.qmd` in this repository. The appendix contains additional analyses of the entropy of causal graphs.
+The appendix, which contains additional analyses, can be found in the document `code/prereg_causal_graph_SI.qmd` in this repository. The appendix contains additional analyses of the entropy of causal graphs.
 
 ## Execution and Runtime
 
@@ -40,7 +40,7 @@ These files can be compiled using Rstudio and Quarto or from the command line us
 
 ```
 quarto render code/prereg_causal_graph.qmd
-quarto render code/secret_other_thing_appendix.qmd
+quarto render code/prereg_causal_graph_SI.qmd
 ```
 
 From within Rstudio, the file can be executed code chunk by code chunk. The rendering will produce PDFs. Expected execution time should be no more than a few minutes at most.
