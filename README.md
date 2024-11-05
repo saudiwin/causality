@@ -51,11 +51,15 @@ packages:
     library(jmuOutlier)
     library(CausalQueries)
 
-Note that one of these packages, `HydeNet`, is no longer available on
-CRAN. `HydeNet` can be installed with the `remotes` package (available
-on CRAN) as follows:
+Note that two of these packages, `HydeNet` and `quickdag`, are no longer
+available on CRAN. `HydeNet` can be installed with the `remotes` package
+(available on CRAN) as follows:
 
     remotes::install_github("nutterb/HydeNet")
+
+`quickdag` can be installed with the `remotes` package as follows:
+
+    remotes::install_github("jrgant/quickDAG")
 
 The session info from the most recent compilation of the file is as
 follows:
