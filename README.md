@@ -55,9 +55,18 @@ Note that two of these packages, `HydeNet` and `quickdag`, are no longer
 available on CRAN. `HydeNet` can be installed with the `remotes` package
 (available on CRAN) as follows:
 
+First, install a `HydeNet` dependency from BioConductor as follows:
+
+    if (!require("BiocManager", quietly = TRUE))
+        install.packages("BiocManager")
+
+    BiocManager::install("graph")
+
+Then install `Hydenet` with the `remotes` package as follows:
+
     remotes::install_github("nutterb/HydeNet")
 
-`quickdag` can be installed with the `remotes` package as follows:
+`quickdag` can be installed similarly:
 
     remotes::install_github("jrgant/quickDAG")
 
