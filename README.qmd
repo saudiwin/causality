@@ -87,4 +87,4 @@ The session info from the most recent compilation of the file is as follows:
 sessionInfo()
 ```
 
-The file was compiled using Mac OS X Sequoia 15.0 with a M3 chip.
+The file was compiled using Mac OS X Sequoia 15.0 with an M3 chip.
