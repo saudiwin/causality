@@ -1,0 +1,90 @@
+---
+title: "README"
+format: gfm
+---
+
+```{r setup}
+#| setup: false
+#| echo: false
+#| message: false
+#| warning: false
+
+library(dplyr)
+library(HydeNet)
+library(dagitty)
+library(ggdag)
+library(tidyr)
+library(ggplot2)
+library(ggthemes)
+library(quickdag)
+library(entropy)
+library(network)
+library(ggnetwork)
+library(dagitty)
+library(ggdag)
+library(DiagrammeR)
+library(rmutil)
+library(jmuOutlier)
+library(CausalQueries)
+
+```
+
+
+This repository contains the Quarto file necessary to reproduce "Holistic Causal Learning with Causal Graphs: A Credible Method for Study Design and Preregistration in the Social Sciences" by Robert Kubinec. Please see the file `prereg_causal_graph.qmd` for the main text of the article with embedded calculations of the entropy of causal graphs. The PDF version of the main article with a doi can be found at: https://osf.io/preprints/socarxiv/a492b/.
+
+The appendix, which contains additional analyses, can be found in the document `secrete_other_thing_appendix.qmd` in this repository. The appendix contains additional analyses of the entropy of causal graphs.
+
+## Execution and Runtime
+
+These files can be compiled using Rstudio and Quarto or from the command line using only Quarto. See instructions for installing Quarto available here: https://quarto.org/docs/get-started/. To render the files from the command line, use the following commands from the project root directory:
+
+```
+quarto render code/prereg_causal_graph.qmd
+quarto render code/secret_other_thing_appendix.qmd
+```
+
+From within Rstudio, the file can be executed code chunk by code chunk. The rendering will produce PDFs. Expected execution time should be no more than a few minutes at most.
+
+## System Specification
+
+The files were compiled with R 4.4.1 and make use of the following R packages:
+
+```
+library(dplyr)
+library(HydeNet)
+library(dagitty)
+library(ggdag)
+library(tidyr)
+library(ggplot2)
+library(ggthemes)
+library(quickdag)
+library(entropy)
+library(network)
+library(ggnetwork)
+library(dagitty)
+library(ggdag)
+library(DiagrammeR)
+library(rmutil)
+library(jmuOutlier)
+library(CausalQueries)
+```
+
+Note that two of these packages, `HydeNet` and `quickdag`, are no longer available on CRAN. `HydeNet` can be installed with the `remotes` package (available on CRAN) as follows:
+
+```
+remotes::install_github("nutterb/HydeNet")
+```
+
+`quickdag` can be installed with the `remotes` package as follows:
+
+```
+remotes::install_github("jrgant/quickDAG")
+```
+
+The session info from the most recent compilation of the file is as follows:
+
+```{r}
+sessionInfo()
+```
+
+The file was compiled using Mac OS X Sequoia 15.0 with a M3 chip.
