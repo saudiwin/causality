@@ -1,0 +1,86 @@
+{
+	"version": 1,
+	"base_image": "registry.codeocean.com/codeocean/r-studio:2022.07.0-548-r4.2.1-ubuntu18.04",
+	"options": {},
+	"installers": {
+		"apt": {
+			"packages": [
+				{
+					"name": "pandoc"
+				},
+				{
+					"name": "quarto"
+				}
+			],
+			"install_software_properties_common": true
+		},
+		"rcran": {
+			"packages": [
+				{
+					"name": "CausalQueries",
+					"version": "1.1.1"
+				},
+				{
+					"name": "DiagrammeR",
+					"version": "1.0.11"
+				},
+				{
+					"name": "dagitty",
+					"version": "0.3-4"
+				},
+				{
+					"name": "dplyr",
+					"version": "1.1.4"
+				},
+				{
+					"name": "entropy",
+					"version": "1.3.1"
+				},
+				{
+					"name": "ggdag",
+					"version": "0.2.13"
+				},
+				{
+					"name": "ggnetwork",
+					"version": "0.5.13"
+				},
+				{
+					"name": "ggplot2",
+					"version": "3.5.1"
+				},
+				{
+					"name": "ggthemes",
+					"version": "5.1.0"
+				},
+				{
+					"name": "jmuOutlier",
+					"version": "2.2"
+				},
+				{
+					"name": "network",
+					"version": "1.18.2"
+				},
+				{
+					"name": "quickdag",
+					"version": "0.2.0"
+				},
+				{
+					"name": "rmutil",
+					"version": "1.1.10"
+				},
+				{
+					"name": "tidyr",
+					"version": "1.3.1"
+				}
+			]
+		},
+		"rgithub": {
+			"packages": [
+				{
+					"name": "HydeNet",
+					"version": "0.10.11"
+				}
+			]
+		}
+	}
+}
