@@ -1,4 +1,4 @@
-# hash:sha256:a228c407fc412111a9e41c2acb6321a2f14781447d253cc226fa78794d62551f
+# hash:sha256:cbde35536564047b9586d7de98797c569d731fc92c735a7f9133349c9c2ad4a6
 FROM registry.codeocean.com/codeocean/py-r:python3.12.4-R4.3.3-JupyterLab4.2.4-RStudiorstudio-server-2024.04.2-764-ubuntu22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -7,6 +7,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libglpk-dev=5.0-1 \
         libmkl-rt=2020.4.304-2ubuntu3 \
+        librsvg2-bin=2.52.5+dfsg-3ubuntu0.2 \
+        librsvg2-dev=2.52.5+dfsg-3ubuntu0.2 \
         pandoc=2.9.2.1-3ubuntu2 \
     && rm -rf /var/lib/apt/lists/*
 
@@ -25,7 +27,8 @@ RUN Rscript -e 'remotes::install_version("CausalQueries", "1.1.1")' \
     && Rscript -e 'remotes::install_version("tidyr", "1.3.1")'
 
 RUN Rscript -e 'remotes::install_github( \
-        "jrgant/quickDAG")' \
+        "jrgant/quickDAG", \
+        ref = "6ea3c3baf82d8e1027db0806ac745a4c5b28a927")' \
     && Rscript -e 'remotes::install_github( \
         "nutterb/HydeNet")'
 

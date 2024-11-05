@@ -15,6 +15,14 @@
 					"version": "2020.4.304-2ubuntu3"
 				},
 				{
+					"name": "librsvg2-bin",
+					"version": "2.52.5+dfsg-3ubuntu0.2"
+				},
+				{
+					"name": "librsvg2-dev",
+					"version": "2.52.5+dfsg-3ubuntu0.2"
+				},
+				{
 					"name": "pandoc",
 					"version": "2.9.2.1-3ubuntu2"
 				}
@@ -80,7 +88,8 @@
 		"rgithub": {
 			"packages": [
 				{
-					"name": "jrgant/quickDAG"
+					"name": "jrgant/quickDAG",
+					"version": "6ea3c3baf82d8e1027db0806ac745a4c5b28a927"
 				},
 				{
 					"name": "nutterb/HydeNet"
