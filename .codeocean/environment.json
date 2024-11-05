@@ -7,9 +7,6 @@
 			"packages": [
 				{
 					"name": "pandoc"
-				},
-				{
-					"name": "quarto"
 				}
 			],
 			"install_software_properties_common": true

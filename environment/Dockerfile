@@ -1,4 +1,4 @@
-# hash:sha256:66398a984a8fee3f6a5a0a943c55c8c5294d9b88051a0054a1ab09d1b5eb1c16
+# hash:sha256:a04655687e30b287c732b7ae69d6ad632c7a5095389239ace8dcd604402462da
 FROM registry.codeocean.com/codeocean/r-studio:2022.07.0-548-r4.2.1-ubuntu18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -6,7 +6,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         pandoc \
-        quarto \
     && rm -rf /var/lib/apt/lists/*
 
 RUN Rscript -e 'remotes::install_version("CausalQueries", "1.1.1")' \
