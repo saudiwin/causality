@@ -251,8 +251,8 @@ To create plausible conditional probability tables, we can use the `inputCPT` fu
 2.  $Pr(T|Z)$
 
 ```{r load_joint}
-joint_table1 <- readRDS("joint_table1.rds")
-joint_table2 <- readRDS("joint_table2.rds")
+joint_table1 <- readRDS("../data/joint_table1.rds")
+joint_table2 <- readRDS("../data/joint_table2.rds")
 ```
 
 I create them using the command interactively by entering in default values ("Yes" or "No") and probability values for each possible value:
