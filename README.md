@@ -1,16 +1,16 @@
 # README
 
 
-This repository contains the Quarto file necessary to reproduce
+This repository contains the Quarto files necessary to reproduce
 “Holistic Causal Learning with Causal Graphs: A Credible Method for
 Study Design and Preregistration in the Social Sciences” by Robert
-Kubinec. Please see the file `prereg_causal_graph.qmd` for the main text
-of the article with embedded calculations of the entropy of causal
+Kubinec. Please see the file `code/prereg_causal_graph.qmd` for the main
+text of the article with embedded calculations of the entropy of causal
 graphs. The PDF version of the main article with a doi can be found at:
 https://osf.io/preprints/socarxiv/a492b/.
 
 The appendix, which contains additional analyses, can be found in the
-document `secrete_other_thing_appendix.qmd` in this repository. The
+document `code/prereg_causal_graph_SI.qmd` in this repository. The
 appendix contains additional analyses of the entropy of causal graphs.
 
 ## Execution and Runtime
@@ -21,8 +21,8 @@ here: https://quarto.org/docs/get-started/. To render the files from the
 command line, use the following commands from the project root
 directory:
 
-    quarto render prereg_causal_graph.qmd
-    quarto render secret_other_thing_appendix.qmd
+    quarto render code/prereg_causal_graph.qmd
+    quarto render code/prereg_causal_graph_SI.qmd
 
 From within Rstudio, the file can be executed code chunk by code chunk.
 The rendering will produce PDFs. Expected execution time should be no
@@ -118,4 +118,4 @@ sessionInfo()
     [64] DiagrammeRsvg_0.1    rstudioapi_0.16.0    jsonlite_1.8.8      
     [67] R6_2.5.1             plyr_1.8.9           statnet.common_4.9.0
 
-The file was compiled using Mac OS X Sequoia 15.0 with a M3 chip.
+The file was compiled using Mac OS X Sequoia 15.0 with an M3 chip.
