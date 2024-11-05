@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -e
+
+wget https://github.com/quarto-dev/quarto-cli/releases/download/v1.6.32/quarto-1.6.32-linux-amd64.deb
+
+sudo gdebi --non-interactive quarto-1.6.32-linux-amd64.deb

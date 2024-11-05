@@ -2,6 +2,5 @@
 set -ex
 
 # This is the master script for the capsule. When you click "Reproducible Run", the code in this file will execute.
-quarto render prereg_causal_graph.qmd --to html
-mv prereg_causal_graph.html ../results/
-mv prereg_causal_graph_files ../results/
+quarto render prereg_causal_graph.qmd
+mv prereg_causal_graph.pdf ../results/

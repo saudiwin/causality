@@ -1,12 +1,18 @@
 {
 	"version": 1,
-	"base_image": "registry.codeocean.com/codeocean/r-studio:2022.07.0-548-r4.2.1-ubuntu18.04",
+	"base_image": "registry.codeocean.com/codeocean/py-r:python3.12.4-R4.3.3-JupyterLab4.2.4-RStudiorstudio-server-2024.04.2-764-ubuntu22.04",
+	"post_install": true,
 	"options": {},
 	"installers": {
 		"apt": {
 			"packages": [
 				{
-					"name": "pandoc"
+					"name": "libmkl-rt",
+					"version": "2020.4.304-2ubuntu3"
+				},
+				{
+					"name": "pandoc",
+					"version": "2.9.2.1-3ubuntu2"
 				}
 			],
 			"install_software_properties_common": true
@@ -58,10 +64,6 @@
 					"version": "1.18.2"
 				},
 				{
-					"name": "quickdag",
-					"version": "0.2.0"
-				},
-				{
 					"name": "rmutil",
 					"version": "1.1.10"
 				},
@@ -74,8 +76,10 @@
 		"rgithub": {
 			"packages": [
 				{
-					"name": "HydeNet",
-					"version": "0.10.11"
+					"name": "jrgant/quickDAG"
+				},
+				{
+					"name": "nutterb/HydeNet"
 				}
 			]
 		}

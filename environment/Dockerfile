@@ -1,11 +1,12 @@
-# hash:sha256:a04655687e30b287c732b7ae69d6ad632c7a5095389239ace8dcd604402462da
-FROM registry.codeocean.com/codeocean/r-studio:2022.07.0-548-r4.2.1-ubuntu18.04
+# hash:sha256:3d7108209e5153d4823b9803c5e74a248fb7d64f6092ee89e6f08621419236cf
+FROM registry.codeocean.com/codeocean/py-r:python3.12.4-R4.3.3-JupyterLab4.2.4-RStudiorstudio-server-2024.04.2-764-ubuntu22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        pandoc \
+        libmkl-rt=2020.4.304-2ubuntu3 \
+        pandoc=2.9.2.1-3ubuntu2 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN Rscript -e 'remotes::install_version("CausalQueries", "1.1.1")' \
@@ -19,10 +20,13 @@ RUN Rscript -e 'remotes::install_version("CausalQueries", "1.1.1")' \
     && Rscript -e 'remotes::install_version("ggthemes", "5.1.0")' \
     && Rscript -e 'remotes::install_version("jmuOutlier", "2.2")' \
     && Rscript -e 'remotes::install_version("network", "1.18.2")' \
-    && Rscript -e 'remotes::install_version("quickdag", "0.2.0")' \
     && Rscript -e 'remotes::install_version("rmutil", "1.1.10")' \
     && Rscript -e 'remotes::install_version("tidyr", "1.3.1")'
 
 RUN Rscript -e 'remotes::install_github( \
-        "HydeNet", \
-        ref = "0.10.11")'
+        "jrgant/quickDAG")' \
+    && Rscript -e 'remotes::install_github( \
+        "nutterb/HydeNet")'
+
+COPY postInstall /
+RUN /postInstall
