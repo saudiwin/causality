@@ -1,10 +1,11 @@
-# hash:sha256:3d7108209e5153d4823b9803c5e74a248fb7d64f6092ee89e6f08621419236cf
+# hash:sha256:a228c407fc412111a9e41c2acb6321a2f14781447d253cc226fa78794d62551f
 FROM registry.codeocean.com/codeocean/py-r:python3.12.4-R4.3.3-JupyterLab4.2.4-RStudiorstudio-server-2024.04.2-764-ubuntu22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        libglpk-dev=5.0-1 \
         libmkl-rt=2020.4.304-2ubuntu3 \
         pandoc=2.9.2.1-3ubuntu2 \
     && rm -rf /var/lib/apt/lists/*

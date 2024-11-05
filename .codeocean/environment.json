@@ -7,6 +7,10 @@
 		"apt": {
 			"packages": [
 				{
+					"name": "libglpk-dev",
+					"version": "5.0-1"
+				},
+				{
 					"name": "libmkl-rt",
 					"version": "2020.4.304-2ubuntu3"
 				},
