@@ -15,6 +15,7 @@ affiliations:
     country: United States of America
 bibliography: references.bib
 toc: true
+number-sections: true
 fontsize: 12pt
 linestretch: 1.7
 fontfamily: times
@@ -52,7 +53,33 @@ library(jmuOutlier)
 library(CausalQueries)
 ```
 
-\newpage 
+\newpage
+
+# Mechanisms and Causal Graphs
+
+In this section I briefly consider an extension to the method that permits qualitative research to be included along with quantitative studies. By doing so, I show that the proposed method of entropy is flexible enough to permit modifications to the definition of causal graphs for non-quantitative research designs. To do so, we can consider a distribution of mechanisms in the causal graph $V$, which I denote as the set $\Omega$. Each directed relation $P(x_i | pa_i)$ would have a corresponding distribution over mechanisms $\Omega$, where $P(\omega_i|x_i)P(x_i|pa_i)$ represents the joint distribution of a given mechanisms $\omega_i$ for a given relation. The Markov property here implies that the causal influence of $pa_i$ must travel via $x_i$ and then through $\omega_i$.
+
+Specifying mechanisms in this way departs from some existing understanding of qualitative research like process-tracing as providing evidence over the existence of edges connecting variables in a causal graph [@humphreys2023; @mahoney2012]. Incorporating mechanisms as separate entities permits mechanisms to be fundamentally distinct from variables, which captures the idea that mechanisms are root processes that connect variables as opposed to variables themselves [@waldner2015] and for that reason may not be easily quantifiable [@collier2011]. While it is not the intent of this article to adjudicate between these competing theories of mechanisms, it is important to note that entropy is flexible enough to allow for such non-traditional understandings of causal graphs.
+
+Because of causal graphs' Markovian property, we can simplify the expression of the joint probability of mechanisms to $P(\omega_i|x_i)P(x_i|pa_i)$ because each variable in a causal graph is independent of other variables in the causal graph once we factor in its parents. In other words, we only need to consider the mechanisms of each node but not each preceding node. We can then consider the joint of both distributions:
+
+\begin{equation}
+\label{entmech}
+H(P(v, \Omega)) = -\sum_{i=1}^N P(\omega|x_i)P(x_i | pa_i)  \text{log}P(\omega|x_i)P(x_i | pa_i)
+\end{equation}
+
+If we consider a graph $V$ that had identical distributions for the probabilities of causal relations $P(v)$, but different distributions for mechanisms $P(\Omega')$, we could then define that a study that increased our type I understanding of mechanisms $P(\Omega')$ would be preferable iff:
+
+\begin{equation}
+\label{greatermech}
+H(P(v, \Omega)) > H(P(v, \Omega'))
+\end{equation}
+
+<!-- So far I have shown all results using Shannon entropy $H$. It is also possible to examine the Kullback-Leibler (KL) divergence [@kullback1951] between different probability distributions of $P(v)$. This measure of *relative* entropy is quite similar to Shannon entropy, so I do not address this further. Using the KL divergence could be useful in a situation where comparisons are made between multiple plausible causal graphs instead of comparing different research studies on the same causal graph as I do in this paper. -->
+
+In summary, this application of entropy to causal graphs reveals how the concept of statistical entropy can shed light on the difficult decisions that must be made when considering research designs. As I explicate in the following case studies, it is straightforward to calculate the amount of type I causal learning from plausible interventions on causal graphs using these formulae. Ultimately, the criterion of entropy suggests that we aim for maximizing the amount we can learn, i.e. causal knowledge, from an application of any of the paradigms. Even weakly causally-identified designs can contribute causal knowledge, and so long as causal graphs are preregistered, our studies can allow for robust exploratory inference that aims at maximizing causal learning and minimizing the costs of expensive data collection.
+
+While I do not include further examples of type II causal learning, its delineation here is to show the flexibility of this method of comparing research designs, including those designed to test for the credibility of prior work. The many formulations of entropy, including Kullback-Leibler divergence [@kullback1951], allow us to subsume equally as many research designs that go beyond exploratory inference. For example, this framework could be combined with meta-analysis to allow for entropy-weighted contributions from different research designs.
 
 # Case Study: Oil Wealth and Democratization
 
