@@ -2,17 +2,17 @@
 title: 'Appendix for Holistic Causal Learning with Causal Graphs'
 date: today
 date-format: long
-author: 
-  - name: Robert Kubinec
-    corresponding: true
-    affiliation: 
-      - ref: nyuad
-affiliations:
-  - id: nyuad
-    name: University of South Carolina
-    city: Columbia
-    state: South Carolina
-    country: United States of America
+# author: 
+#   - name: Robert Kubinec
+#     corresponding: true
+#     affiliation: 
+#       - ref: nyuad
+# affiliations:
+#   - id: nyuad
+#     name: University of South Carolina
+#     city: Columbia
+#     state: South Carolina
+#     country: United States of America
 bibliography: references.bib
 toc: true
 number-sections: true
