@@ -3,7 +3,7 @@ title: 'Holistic Causal Learning with Causal Graphs: A Credible Method for Study
 date: today
 date-format: long
 abstract: "While research designs in the social sciences have employed increasingly sophisticated methods to control false positive rates, there is still substantial debate about the merit of pre-registration and other recent open science reforms. In this paper, I present a method for preregistering causal graphs and employing the metric of entropy, and in particular Jaynes' theory of maximum entropy, to measure the causal contribution of a research study relative to prior knowledge. To demonstrate the method's utility, I show how recent research in both COVID-19 and political authoritarianism can be fruitfully understood using causal graphs and entropy. Additionally, I provide R code to enable researchers to compute these metrics, helping them prepare for various outcomes and learning approaches for the purpose of preregistration."
-bibliography: references.bib
+bibliography: code/references.bib
 toc: false
 fontsize: 12pt
 linestretch: 1.7
