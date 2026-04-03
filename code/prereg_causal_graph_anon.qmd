@@ -3,13 +3,26 @@ title: 'Holistic Causal Learning with Causal Graphs: A Credible Method for Study
 date: today
 date-format: long
 author:
-  - name: 
-abstract: "While research designs in the social sciences have employed increasingly sophisticated methods to control false positive rates, there is still substantial debate about the merit of preregistration and other recent open science reforms. In this paper, I present a method for preregistering causal graphs and employing the metric of entropy to measure the amount of causal learning in diverse study designs--whether or not the analyses were exhaustively preregistered. By preregistering causal graphs and measuring causal learning, researches can engage in open-ended analyses without concerns about $p$-hacking. I provide R code to enable researchers to compute these metrics so they can add these calculations to their preregistrations and study designs."
+  - name: Robert Kubinec
+    corresponding: true
+    email: rkubinec@mailbox.sc.edu
+    affiliations:
+      - ref: nyuad
+affiliations:
+  - id: nyuad
+    name: University of South Carolina
+    city: Columbia
+    state: South Carolina
+    country: United States of America
+abstract: "While research designs in the social sciences have employed increasingly sophisticated methods to control false positive rates, there is still substantial debate about the merit of preregistration and other recent open science reforms. In this paper, I present a method for preregistering causal graphs and measuring the amount of causal learning in a given study by comparing pre/post changes in causal information. By employing robust metrics for causal learning, researches can also engage in post-study exploratory analyses while limiting concerns about $p$-hacking. To make the method practical, I provide an R package `elicitcausal`, including an online web application, to enable researchers rapidly create theoretically-informed causal graphs with minimal technical expertise.^[A reproducible version of this paper with code is available at <https://github.com/saudiwin/causality/blob/master/code/prereg_causal_graph_anon.qmd>. I thank David Waldner, Christopher Winship, Michael Poznansky, Kevin Munger, Arthur Spirling, Andrew Gelman, Kosuke Imai, participants in Polmeth Asia 2023 conference, and participants in the TexMeth 2025 conference for helpful comments on this manuscript.]"
 bibliography: references.bib
 toc: false
 fontsize: 12pt
 linestretch: 1.7
 fontfamily: times
+filters:
+  - diagram
+  - authors-block
 format: 
   wordcount-pdf:
     documentclass: article
@@ -50,15 +63,29 @@ library(CausalQueries)
 
 \newpage
 
-The past decade has seen remarkable changes in how social scientists are expected to conduct research studies, especially when the study involves experiments or aims for causal inference more generally. In order to combat questionable research practices (QRPs) that undermine statistical findings [@schneiderSomethingRottenState2023], open science reformers have proposed preregistration as a form of binding commitment device that (in theory) forces researchers to report all relevant analyses [@scogginsMeasuringTransparencySocial2023]. Indeed, some social science journals have recently made preregistration mandatory,[^1] leading to an increasing adoption of the norm that preregistration is necessary for experimental inference and possibly observational (or quasi-experimental) inference as well.
+# Competing Interests
+
+The author has no competing interests to declare.
+
+# Data and Code Availability Statement
+
+All data presented in this article is simulated from statistical distributions. All calculations shown in this article and referenced in the appendix are available from a public Github repository: <https://github.com/saudiwin/causality>.
+
+\newpage
+
+The past decade has seen remarkable changes in how social scientists are expected to conduct research studies, especially when the study involves experiments or aims for causal inference more generally. In order to combat questionable research practices (QRPs) that undermine statistical findings [@schneiderSomethingRottenState2023; @nagyBestiaryQuestionableResearch2025], open science reformers have proposed preregistration as a form of binding commitment device that (in theory) forces researchers to report all relevant analyses [@scogginsMeasuringTransparencySocial2023]. Indeed, some social science journals have recently made preregistration mandatory,[^1] leading to an increasing adoption of the norm that preregistration is necessary for experimental inference and possibly observational (or quasi-experimental) inference as well.
 
 [^1]: For more information, see <https://tompepinsky.com/2021/01/16/on-requiring-preregistration/>.
 
 Despite this widespread adoption, evidence of the effectiveness of preregistration remains scant and has been questioned recently [@brodeurPreregistrationPreanalysisPlans2024; @webbConfrontingNewGatekeepers2024]. In one notable recent episode, Open Science Foundation authors used results from outside their own preregistered study of the effect of preregistrations [@bak-colemanClaimsScientificRigour2024], which the journal asked them to retract [@protzkoRetractionNoteHigh2024]. The basic logic of preregistration as a "bind the hands" device has been further questioned as it may only shift the selection away from null effects and other undesirable research outcomes to a different stage [@schakenbergPreregistrationStrategicPrivate2024]. For these reasons, while preregistration is becoming a growing norm, it is also increasingly under fire for failing to live up to its promises to make science a fairer, more transparent, and ultimately more credible enterprise.
 
-In this paper, I propose a new method for understanding preregistration as involving a registration of prior researcher knowledge that is expressed in the form of a causal graph. This method builds on recent advances in social science research design that is increasing the capability of tools for applied researchers to diagnose issues and construct robust theories [@blair2023; @humphreys2023; @scheel2022; @vowels2023]. With a preregistered causal graph along with suitable priors over the relationships between variables [@humphreys2023; @vowels2023], authors can then employ metrics based on entropy to determine the level of causal knowledge that a particular study would contribute [@buzbas2024]. Importantly, defining causal knowledge as a function of an entire causal graph—as opposed to a single experimental treatment—allows for a range of analyses to be incorporated into potential learning without requiring explicit preregistration. In fact, I show that this method applies equally well to observational, experimental, and qualitative research designs.
+In this paper, I propose a new method for adding theoretically-informed causal graphs to preregistrations, which represents a complete expression of prior researcher knowledge about the outcome. This method builds on recent advances in social science research design that is increasing the capability of tools for applied researchers to diagnose issues and construct robust theories [@blair2023; @humphreys2023; @scheel2022; @vowels2023; @vanlissa2026]. With a preregistered causal graph along with suitable priors over the relationships between variables [@humphreys2023; @vowels2023; @vanlissa2026], authors can then employ metrics based on entropy to determine the level of causal knowledge that a particular study would contribute [@buzbas2024]. Importantly, defining causal knowledge as a function of an entire causal graph—as opposed to a single experimental treatment—allows for a range of analyses to be incorporated into potential learning without requiring explicit preregistration. In fact, this method applies equally well to observational and qualitative research designs.
 
-As I also show in this paper, applying metrics like entropy to causal graphs allows us to holistically conceptualize causal learning from studies. I identify two types of potential learning: the more common type I causal learning (searching for new relationships) and the less common yet equally as important type II causal learning (learning from nulls as in @alrababah2022). While entropy is not the only metric that can be applied, it has a firm foundation in applied statistics [@jaynes2003] and can be readily applied to complex joint probability distributions like those in causal graphs [@pearl2000]. Given an open-ended preregistration with a causal graph, study authors can determine with much more precision the level of causal knowledge that can be obtained from a given research design *without having to exhaustively detail all possible analytic procedures.*
+I provide an R package, `elicitcausal`, and a related web app[^2] to simplify the process of creating causal graphs that incorporate researcher priors about the process they are studying. The software produces files that can be incorporated directly into pre-registration documents and later updated post-study with new information learned from the study. The causal graphs produced by `elicitcausal` integrate as well with other existing R package for causal graph analysis [@humphreys2023; @vanlissa2026]. After a post-study update, the web application will calculate a precise amount of causal learning relative to the preregistered causal graph using the causal learning entropy metric that is described in this paper.
+
+[^2]: The web app is available at <https://causal.wilddata.solutions/> and a YouTube video explaining usage is available at <https://www.youtube.com/watch?v=QVilkMTmIvY&t=297s>.
+
+<!-- As I also show in this paper, applying metrics like entropy to causal graphs allows us to holistically conceptualize causal learning from studies. I identify two types of potential learning: the more common type I causal learning (searching for new relationships) and the less common yet equally as important type II causal learning (learning from nulls as in @alrababah2022). While entropy is not the only metric that can be applied, it has a firm foundation in applied statistics [@jaynes2003] and can be readily applied to complex joint probability distributions like those in causal graphs [@pearl2000]. Given an open-ended preregistration with a causal graph, study authors can determine with much more precision the level of causal knowledge that can be obtained from a given research design *without having to exhaustively detail all possible analytic procedures.* -->
 
 <!--#I propose that we can accomplish this objective by applying Jaynes' (2003) theory of maximum entropy to the evaluation of causal systems---specifically, by calculating the entropy of the joint distribution of variables in a causal graph. Entropy is a framework widely used in statistics to represent the relative amount of information present in a random variable [@shannon1948]. Entropy is a characteristic of a random variable's distribution; the flatter (more uncertain) the distribution, the more entropy exists. When applied to causal graphs [@pearl2000], the theory of maximum entropy requires us to begin with minimal assumptions and always seek to maximize our uncertainty given these set of minimal assumptions.   -->
 
@@ -112,25 +139,93 @@ Similarly, @spirling2022 show how to combine diverse sources of information into
 
 To make preregistrations optimally useful, the documents should serve a purpose within a larger theory of inference [@scheel2022]. Existing frameworks for preregistration tend to follow a Popperian type of logic in which the scientist derives hypotheses independent of data collection [@popperScienceFalsification1963], and experiments are attempts to refute or confirm these previously derived hypotheses. While it is not my aim to dispute the Popperian understanding of the scientific process--though it has notable critics [@agassiPopperHisPopular2022]--it is rather much easier to point out that in social scientific practice, the Popperian ideal is rarely if ever achieved [@caldwellProblemsFalsificationismEconomics1984]. Our theories are too imprecise [@frankenhuisStrategicAmbiguitySocial2022; @scheel2022], our measures are too noisy [@flake2019], and our data collection is too difficult to allow for tests that can be seen as fully confirming or disconfirming for most studies we perform [@gelmanStatisticsCrisisReplication2015].
 
-The traditional view of preregistration cited earlier has its aim of bringing science closer to the falsificationist goal. Similarly, the recent criticism of the movement alleges that preregistration norms have failed to stop $p$-hacking and other QRPs. However, preregistration can serve multiple aims, not all of which have to do with falsification per se. After all, much of social science research is exploratory [@swedbergExploratoryResearch2020; @gerring2012a], either because existing theories do not cover the empirical data, or because the theories are too imprecise as to provide clear predictions before observing the data.
+Consequently, I argue that we would be better served as a research community if we thought of preregistration as one step along the *continuous* process of causal learning. That is, preregistration can serve multiple aims, not all of which have to do with falsification per se. Much of social science research is exploratory [@swedbergExploratoryResearch2020; @gerring2012a], either because existing theories do not cover the empirical data, or because the theories are too imprecise as to provide clear predictions before observing the data. A properly-done preregistration should increase our confidence in the validity of a study but still permit causal learning even when study imperfections exist.
 
-The solution proposed in this paper is to preregister causal graphs for all kinds of research, whether observational, experimental, or even qualitative (mechanistic). A causal graph does not need to be absolutely true in an epistemic sense to still be a useful guide for theory-informed research [@vowels2023]. While this method does require the researcher to formalize their knowledge of the data-generating process, the preregistration of causal graphs provides a path forward for permitting exploratory analyses that avoid post-hoc theoretical justifications for their decisions [@velicuMakingMisconductMake2025]. Furthermore, as I show in this article, preregistering causal graphs permits more holistic statements of a study's contribution to causal learning; i.e., incorporating studies that are both experimental *and* non-experimental.
+The method I present in this paper will address these changes by providing ways for researchers to make preregistrations more robust to unforeseen exploratory analysis without sacrificing statistical validity. One of the main innovations I present is to precisely measure causal learning in terms of changes to causal graphs from before and after a study is conducted using entropy. Before presenting this method, I will discuss the many ways that preregistrations have been used in the open science movement so far.
 
-There is a vast and growing literature on causal graphs, much of it stemming from the @pearl2000 revival of interest in causal systems. While social-scientific research designs often assume a binary treatment and a binary outcome, social science theories can make use of many variables, and causal graphs are able to incorporate a very high degree of theoretical complexity. This flexibility is very important for avoiding the previously described issues as $p$-hacking often involves subgroup analyses and other exploratory approaches that incorporate additional variables.
+## What A Preregistration Should Include
 
-This paper is certainly not the first to show that causal graphs can help advance research goals in difficult areas. These type of structural causal models have been increasingly applied to diverse phenomena across the social sciences [@blackwellFrameworkDynamicCausal2013; @liuPracticalGuideCounterfactual2024; @waldner2015; @vowels2023]. My intention here is to incorporate causal graphs in the same manner as @humphreys2023 recent work in terms of a tool for organizing and understanding theories which are subsequently tested with data. I defer the reader to their treatment for a more thorough understanding of the underpinnings of causal graphs and their relationship to individual research designs.
+Although preregistration has become a growing norm, there is significant diversity when it comes to the actual content of preregistrations. Originally, in the clinical context, a preregistration entailed writing a document with information about an upcoming medical RCT. A preregistration can be as simple as briefly describing the procedures to be undertaken or the primary outcome to be studied. However, an emerging consensus in the social sciences is that these very brief preregistrations are of minimal use when it comes to stopping QRPs [@vandenakkerPotentialPreregistrationPsychology2024; @hahnCrossSectionalStudyCompleteness2025; @hardwickeReducingBiasIncreasing2023].
 
-One of the most important objections to relying on causal graphs is that it is difficult to know when a causal graph is correct or true in an absolute sense [@waldner2015]. Theoretically, a correct causal graph would permit a scholar to determine causal relations from purely observational data; practically, if we knew true causal graphs for social processes, we would have little need of further research.
+Recent work suggests that an effective preregistration is one that contains study procedures, a power analysis, specific outcomes to be measured, hypotheses to be tested, and a pre-analysis plan of the specific statistical models to be estimated [@bosnjakTemplatePreregistrationQuantitative2022; @p.simmonsPreregistrationWhyHow2021]. If the preregistration only contains general information about the study procedures, but no pre-analysis plan, it seems unlikely that the preregistration can meaningfully stop $p$-hacking because the researcher can make numerous decisions about which analyses to report [@brodeurPreregistrationPreanalysisPlans2024; @bakkerEnsuringQualitySpecificity2020]. Perhaps the most complete preregistration is one in which the actual statistical code used for analyses and figures is part of the document, leaving almost no room for post-hoc input into the study. These more rigorous ideas of preregistration have evolved into the growing use of Registered Reports [@nosek2014], in which the preregistration is peer-reviewed before the study is conducted.
 
-Nevertheless, I argue that a causal graph can help even in situations where substantial uncertainty exists over the true causal graph, as I explain in this paper. So long as the analysis can limit itself to a specific set of variables—which is in many cases a requirement for any kind of research study—then a causal graph, even a very simple one, can be derived. Given the full range of potential causal graphs, even up to the set of all bidirectional graphs, the entropy metric can then be used to determine how much causal learning is possible depending on the type of research design that is pursued.
+However, the more thorough brand of preregistration has its critics. Economists have been less eager to adopt the more thorough standard for preregistration, arguing that the case for $p$-hacking is overstated and complete documentation of analysis steps requires foresight that scientists do not have [@olkenPromisesPerilsPreanalysis2015; @phamPreregistrationNeitherSufficient2021; @banerjeePraiseModerationSuggestions2020]. Political scientists have also become more skeptical of preregistrations because they are biased toward well-resourced institutions [@webbConfrontingNewGatekeepers2024] and fail to stop $p$-hacking even if perfectly enforced [@schakenbergPreregistrationStrategicPrivate2024; @moniz2025]. Indeed, while support for open science reforms in general like sharing code and data is almost 90 percent among social scientists, support for preregistration specifically is much lower at 58 percent [@fergusonSurveyOpenScience2023].
+
+One of the main issues with the thorough approach to preregistration is that the final published scholarship inevitably deviates from the preregistration. To paraphrase a military adage, no preregistration survives first contact with study subjects, and social science experiments almost always have twists and turns that deviate from even the most thoughtful preregistration. As a consequence, as preregistrations become more detailed and thus more effective, they also become more likely to be less-than-perfectly implemented, an unfortunate dilemma. Perhaps even more problematically, preregistrations are a norm only for experimental studies, while so-called observational causal methods like differences-in-differences rarely, if ever, have them, creating a problematic double standard for causal inference.
+
+A sticking point with preregistrations as a method for determining study validity hinges on who has the authority to excuse deviations if they occur (which seems inevitable in many social science applications). @lakensWhenHowDeviate2024 lays out five reasons for why deviations could be considered valid (i.e., as opposed to the nefarious purpose of $p$-hacking), including unforeseen events, unintentional missing information, and honest mistakes. While Lakens has by far the most developed theory of how to evaluate deviations by focusing on their consequences for internal study validity, adjudicating these deviations still seems to require knowledge of researcher motives. As he writes regarding the potential for mistakes in pre-specified statistical analyses, "the trade-off between the severity of the test and the validity of the inference might mean that deviating from the preregistration is the best decision, *unless the deviation is driven by biasing selection effects*" (5). In other words, deviating from a preregistration is forgivable so long as the deviation is not aimed at producing an inference in the researcher's preferred direction, which requires other, supposedly neutral, scholars to adjudicate what the researcher *truly* wanted. Ultimately, this process might require involved judicial adjudication procedures that are outside both the scope and spirit of peer review.
+
+In this paper, I will take a relatively moderate position that preregistration and pre-analysis plans are excellent documents for all research studies that scholars should undertake, *even if* they do not stop $p$-hacking. As noted earlier, militaries engage in extensive planning even knowing that the plans will not work perfectly. Preregistration has undoubtedly improved experimental practice in the social sciences by encouraging scholars to design theoretically-informed and statistically robust RCTs. I argue that part of the controversy with these documents is that, as the recommendations for preregistration have become ever more complicated, deviations are inevitable, and once the preregistration has been tainted by its exposure to the real world, it becomes difficult to see the preregistration as fulfilling its promise as a path towards epistemic certainty.
+
+To help resolve this dilemma, I will focus my discussion on an element of preregistrations that has received much less attention in the literature: the researcher's prior knowledge about the research question. At present, the primary way that such prior knowledge is incorporated is via power analysis, a crucial part of experimental design—though it is limited in terms of how much prior information it contains beyond assumptions about true effect sizes. Scholars have begun to call for more detailed attention to the importance of theories in social science research [@scheel2022], even to the point of preregistering directed a-cyclic graphs [@vanlissa2026]. My aim is to build on prior work by showing how preregistering a causal graph and comparing it to a post-study causal graph permits an exact calculation of causal learning that subsumes all possible analytic procedures. In other words, being more explicit about theoretical priors not only leads to better-designed studies but also less concern over the potential pitfalls of exploratory analysis. Because causal graphs contain so much information in a compact form, they are an elegant and relatively low-cost way of making robust preregistrations. As I show later, I have further designed statistical software that reduces the barriers to creating and preregistering causal graphs that contain theoretical information about the proposed causal process.
+
+::: {#fig-dag2}
+``` tikz
+%%| width: 50%
+
+\begin{tikzpicture}
+  \node[draw, circle, minimum size=1cm] (x) at (-2,0) {$X$};
+  \node[draw, circle, minimum size=1cm] (y) at (2,0) {$Y$};
+  \draw[->, thick] (x) -- (y);
+\end{tikzpicture}
+```
+
+Basic Bivariate Directed Acyclic (Causal) Graph
+:::
+
+::: {#tbl-dag2}
+
+|                     | **Y = 0** | **Y = 1** | **Row Marginal** |
+|---------------------|-----------|-----------|------------------|
+| **X = 0**           | 0.30      | 0.20      | 0.50             |
+| **X = 1**           | 0.10      | 0.40      | 0.50             |
+| **Column Marginal** | 0.40      | 0.60      | Total = 1.00     |
+
+: Example Joint Probability Distribution for Bivariate Causal Graph
+:::
+
+A minimal causal graph is a bivariate causal graph with two nodes or variables: $X \rightarrow Y$ (see @fig-dag2). In an experimental study, $X$ is the treatment and $Y$ is the outcome. While there is a voluminous literature on causal graphs that I do not intend to cover here [@pearl2000], it is worth noting that all causal graphs imply a probability distribution for the outcome. In other words, the causal graph in X implies a probability distribution for $Y$ conditional on $X$, which can be represented by a 2 x 2 table as in @tbl-dag2. The joint probability of $X$ and $Y$ includes four separate values which collectively sum to 1 (assuming $X$ and $Y$ are binary variables). These probabilities represent our beliefs about how $X$ and $Y$ are related to each other, which can be thought of as a formal expression of a theory--though we would expect most theories to have more than two variables.
+
+A fully specified causal graph with variables, relationships between variables, *and* the strength of those relationships, can representation a complete formalization of a researcher's knowledge about the theory they seek to test. Similarly, a preregistered power analysis can be thought of as a reduced-form analysis of a causal graph in which the aim is to test a specific relationship in the graph [@blair2019].
+
+For these reasons, I argue that a causal graph for a preregistration should include *all* variables that the researcher believes affect the outcome along with information about plausible effect sizes via preregistered priors about the relationship between the variables in the graph. With this information, as I explicate later, deviations can be adjudicated in terms of whether they advance scientific knowledge rather than whether they can be classified as illegitimate. Furtheromore, as I show, this method of preregistration requires a minimal amount of time via R-based web applications.
+
+```{=html}
+<!--# Causal graphs have become increasingly useful tools in the social sciences for discussing the assumptions that underpin causal inference [@pearl2000], and it is not my intention to provide a full summary of the voluminous research on the subject. Put simply, a causal graph contains all the variables that a researcher beliefs affect an outcome, which can be understood as a graphical depiction of a *theory* [@vanlissa2026]. Furthermore, as I show below, a causal graph can hold additional information about the strength of the relationship between variables, which happens to also be the information necessary for robust power analysis.
+
+One of the most important objections to relying on causal graphs is that it is difficult to know when a causal graph is correct or true in an absolute sense [@waldner2015]. Theoretically, a correct causal graph would permit a scholar to determine causal relations from purely observational data; practically, if we knew true causal graphs for social processes, we would have little need of further research. However, a causal graph does not need to be absolutely true in an epistemic sense to still be a useful guide for theory-informed research [@vowels2023]. While this method does require the researcher to formalize their knowledge of the data-generating process, the preregistration of causal graphs provides a path forward for permitting exploratory analyses that avoid post-hoc theoretical justifications for their decisions [@velicuMakingMisconductMake2025]. Furthermore, as I show in this article, preregistering causal graphs permits more holistic statements of a study's contribution to causal learning, even incorporating studies that are both experimental *and* non-experimental. -->
+```
+
+```{=html}
+<!--# There is a vast and growing literature on causal graphs, much of it stemming from the @pearl2000 revival of interest in causal systems. While social-scientific research designs often assume a binary treatment and a binary outcome, social science theories can make use of many variables, and causal graphs are able to incorporate a very high degree of theoretical complexity. This flexibility is very important for avoiding the previously described issues as $p$-hacking often involves subgroup analyses and other exploratory approaches that incorporate additional variables.
+
+This paper is certainly not the first to show that causal graphs can help advance research goals in difficult areas. These type of structural causal models have been increasingly applied to diverse phenomena across the social sciences [@blackwellFrameworkDynamicCausal2013; @liuPracticalGuideCounterfactual2024; @waldner2015; @vowels2023]. My intention here is to incorporate causal graphs in the same manner as @humphreys2023 recent work in terms of a tool for organizing and understanding theories which are subsequently tested with data. I defer the reader to their treatment for a more thorough understanding of the underpinnings of causal graphs and their relationship to individual research designs. -->
+```
+
+Once a causal graph is preregistered, the probability distribution of the graph can be later updated following the results of the study. These updates can be done via direct incorporation of the study's data (i.e., fitting the graph to the data), though in the sense presented here that kind of analysis is not strictly necessary. Ultimately, the researcher must decide how much was learned about a specific causal question given the study, and the causal graph's probabilities should reflect that qualitative judgment--though of course these judgments can and should be interrogated by other scholars.
+
+For the example shown in @fig-dag2, suppose that the researcher learned that the probability that $Y$ would equal 1 when $X$ equaled 1 (such as a positive outcome in a biomedical trial) increased significantly. They could then update the joint bivariate distribution to the following to reflect their new understanding of the causal system as shown in @tbl-dag3.
+
+::: {#tbl-dag3}
+
+|                     | **Y = 0** | **Y = 1** | **Row Marginal** |
+|---------------------|-----------|-----------|------------------|
+| **X = 0**           | 0.05      | 0.05      | 0.10             |
+| **X = 1**           | 0.10      | 0.80      | 0.90             |
+| **Column Marginal** | 0.15      | 0.85      | Total = 1.00     |
+
+: Updated Joint Probability Distribution for Bivariate Causal Graph
+:::
+
+The main difference between the graphs is that the probability of $P(Y=1|X=1)$ (the lower-right cell) increased from 0.40 to 0.80, while the other cells decreased. We could simply report our causal learning as this probability change (akin to a treatment effect) of +0.4, but what about the changes in the other cells in the graph? To understand how much we have learned about the entire causal system, we need a metric that takes into the account the full joint probability distribution--especially with graphs that are more involved than just two variables. I will discuss such a measure in the next section.
 
 ## Entropy as a Measure of Causal Learning
 
-Though not the only possible choice, entropy is an excellent statistical summary measure that can be used to compare causal graphs from before and after studies are conducted. Entropy is a concept with a long history in statistics, though in this paper it is used primarily as a way of making nuanced statements about the sum total of uncertainty in a causal system. Statistical, or Shannon, entropy provides a measure of the "information" in a random variable in terms of the deviation of a set of observations from pure random noise [@shannon1948].
+Preregistering causal graphs is only part of the answer to overcoming existing limitations in how studies are evaluated. We also need a metric that can be used to holistically compare causal graphs from before and after studies are implemented to understand how much causal learning took place. Though not the only possible choice, entropy is an excellent statistical summary measure that can be used to compare the entire joint probability distribution of pre/post causal graphs. Entropy is a concept with a long history in statistics, though in this paper it is used primarily as a way of making nuanced statements about the sum total of uncertainty in a causal system. Statistical, or Shannon, entropy provides a measure of the "information" in a random variable in terms of the deviation of a set of observations from pure random noise [@shannon1948]. Although the term "entropy" may be new to many social scientists, statistics of model fit like the Akaike information criterion (AIC) are commonly reported in regression analyses and are in essence a measure of the entropy of the outcome conditional on the model.
 
 <!-- In general, as a probability distribution becomes more equal or uniform, entropy increases because all outcomes are equally likely, whereas when a probability distribution becomes more degenerate or peaked, entropy decreases as some outcomes are more certain than others. -->
 
-Shannon entropy $H$ is defined as a simple formula applied to a distribution of $N$ probabilities that cumulatively sum to 1:
+Shannon entropy $H$ is defined as a logarithmic formula applied to a distribution of $N$ probabilities that cumulatively sum to 1:
 
 \begin{equation}
 \label{shannon}
@@ -139,16 +234,9 @@ H = - \sum_{n=1}^N p_n \text{log}p_n
 
 <!-- , but its appeal is in meeting certain qualifications for determining an entropy measure of probability, including that it increases as it moves away from neutral probabilities over outcomes (such as $\frac{1}{N}$) and reaches a minimum at 0 when any of the probabilities are equal to 1 -->
 
-The formula in (\ref{shannon}) is unfortunately not intuitive, in part because the units of entropy are in logarithms. Because I am interested in entropy as a framework, I use the logarithmic base of 1.01:
+The formula in (\ref{shannon}) is unfortunately not intuitive, in part because the units of entropy are in logarithms. To better capture the essence of entropy, Figure 3 plots entropy calculations for probability distributions with varying levels of total uncertainty. What is important to note is that all of these distributions have the same expected value, but are nonetheless very different statements about underlying uncertainty. Roughly speaking, the uniform distribution has 100 percent more entropy than the normal distribution, which has 30 percent more entropy than the student's T and Laplace distributions. These plots show why entropy is a powerful heuristic: it captures our sense of how certain we are of the empirical possibilities underlying a distribution of probability that is independent of the form of the distribution. If we know nothing about a process, we can assume a uniform distribution that leaves probability mass on all possible outcomes, or what is known as the maximum entropy distribution per @jaynes2003. But if we know more about how a process operates, we can considerably reduce our uncertainty (and hence entropy) by choosing a more specified distribution.
 
-\begin{equation}
-\label{myv}
-H = - \sum_{n=1}^N p_n \text{log}_{1.01}p_n
-\end{equation}
-
-A logarithmic base of 1.01 means that each unit increase is equivalent to multiplying entropy by 1.01, or an increase of +1% in total entropy from baseline. Figure 3 plots entropy calculations for probability distributions with varying levels of total uncertainty. What is important to note is that all of these distributions have the same expected value, but are nonetheless very different statements about underlying uncertainty. Roughly speaking, the uniform distribution has 100 percent more entropy than the normal distribution, which has 30 percent more entropy than the student's T and Laplace distributions. These plots show why entropy is a powerful heuristic: it captures our sense of how certain we are of the empirical possibilities underlying a distribution of probability that is independent of the form of the distribution. If we know nothing about a process, we can assume a uniform distribution that leaves probability mass on all possible outcomes, or what is known as the maximum entropy distribution per Jaynes. But if we know more about how a process operates, we can considerably reduce our uncertainty (and hence entropy) by choosing a more specified distribution.
-
-It is worth noting that entropy and variance are both statements about the uncertainty in a statistical distribution but are not interchangeable. Changes in the variance of variables, such as through Bayesian updating, provide similar information to entropy when considering repeated observations of the same random variable [@humphreys2023, p. 327]. However, it is important to note that in general entropy is a completely different measure than variance. Entropy does not carry the units of a random variable as the variance does, which permits entropy to be used across variables of different distributions (or even unknown distributions) in the same causal system. Variance is also defined as the second moment of a given distribution, while entropy is not a moment of any kind. Conceptually, entropy combines information from different moments, including variance, skewness and kurtosis, which is the reason it is often the basis for general measures of model fit like the (Wanatabe-)Akaike information criterion (AIC).
+It is worth noting that entropy and variance are both statements about the uncertainty in a statistical distribution but are not interchangeable. Changes in the variance of variables, such as through Bayesian updating, provide similar information to entropy when considering repeated observations of the same random variable [@humphreys2023, p. 327]. However, it is important to note that in general entropy is a completely different measure than variance. Entropy does not carry the units of a random variable as the variance does, which permits entropy to be used across variables of different distributions (or even unknown distributions) in the same causal system. Variance is also defined as the second moment of a given distribution, while entropy is not a moment of any kind. Conceptually, entropy combines information from different moments, including variance, skewness and kurtosis, which is the reason it is often the basis for general measures of model fit like AIC and BIC.
 
 <!--# Finally and most importantly, theories and lemmas built on entropy, such as Jaynes' maximum entropy considered here, do not hold when variance is the underlying measure. The relationship between variance and entropy varies significantly across distributions [@mukherjee1986], which limits the utility of relying on variance as a heuristic for entropy.   -->
 
@@ -193,13 +281,15 @@ plot_d %>%
   labs(caption="Because these are continuous distributions and entropy is a measure\nof discrete random variables, the continuous variates were first binned and then converted to probabilities.")
 ```
 
-While entropy has been applied successfully to many statistical problems, my intention in defining it here is to think of it as a way to understand the relative causal learning that can be obtained from different research designs. @jaynes2003 defines the maximum entropy principle as always preferring a distribution of higher entropy conditional on including all known facts in the distribution. For example, suppose we wanted to predict stock market prices. Lacking any special knowledge of stock prices, we would want our uncertainty to reflect the fact that all we have to analyze are the movements of individual stocks over time--we would want to maximize entropy or uncertainty, given the data we have. But if we knew that the Federal Reserve intended to increase interest rates, we could include that information in our model and consequently obtain a lower entropy distribution.
+While entropy has been applied successfully to many statistical problems, my intention in defining it here is to think of it as a way to understand the relative causal learning that can be obtained from different research designs. I provide here the intuition behind applying entropy to a causal graph, which can be understood as a joint conditional probability distribution in which each variable of the graph has an influence on the outcome (i.e., final terminal node). In the appendix I provide a more thorough mathematical definition for the interested reader.
+
+Employing entropy as a metric for causality helps connect causal thinking to a statistical concept with deep roots. @jaynes2003 defines the maximum entropy principle as always preferring a distribution of higher entropy conditional on including all known facts in the distribution. For example, suppose we wanted to predict stock market prices. Lacking any special knowledge of stock prices, we would want our uncertainty to reflect the fact that all we have to analyze are the movements of individual stocks over time--we would want to maximize entropy or uncertainty, given the data we have. But if we knew that the Federal Reserve intended to increase interest rates, we could include that information in our model and consequently obtain a lower entropy distribution.
 
 Ultimately, the goal of research design should be to reduce entropy whenever possible in terms of our understanding of how the social world operates. If we have a more certain knowledge of the distribution of outcomes, we can state with reasonable confidence that our knowledge is increasing [@gerring2006]. To do so, we have to produce new propositions that explain human behavior and allow us to make judgments about what is more or less likely to occur. From a Bayesian point of view, we could re-state this problem as meaning that we should always prefer the research design that increases our knowledge relative to our prior, even if the knowledge we obtain has residual bias [@little2021].
 
-In other words, we want to learn new facts about the world such that we reduce our entropy in understanding causal systems. At the same time, we want to maximize entropy given what we know to reduce blind spots and over-confidence. Causal learning involves striking this delicate balance between assuming too much and assuming too little [@clarke2007].
+<!-- In other words, we want to learn new facts about the world such that we reduce our entropy in understanding causal systems. At the same time, we want to maximize entropy given what we know to reduce blind spots and over-confidence. Causal learning involves striking this delicate balance between assuming too much and assuming too little [@clarke2007]. -->
 
-Based on the principle of maximum entropy, I consider two ways that changes in entropy can map onto learning about causal graphs. Generally, we tend to think of causal learning as involving reducing entropy, that is, reducing our uncertainty and adding structure to our understanding of the world. I call this *type I* causal learning. At the same time, if we are overconfident in our causal knowledge, we may need to instead inflate our uncertainty, or what I term *type II* causal learning. Type II causal learning relates to the growing body of literature about the importance of making inferences concerning "null effects" in experiments [@alrababah2022].
+I consider two ways that changes in entropy can map onto learning about causal graphs. Generally, we tend to think of causal learning as involving reducing entropy, that is, reducing our uncertainty and adding structure to our understanding of the world. I call this *type I* causal learning. At the same time, if we are overconfident in our causal knowledge, we may need to instead inflate our uncertainty, or what I term *type II* causal learning. Type II causal learning relates to the growing body of literature about the importance of making inferences concerning "null effects" in experiments [@alrababah2022].
 
 <!-- This framework helps resolve some inconsistencies in how models are incorporated in the social sciences. On the one hand, more complex models are seen as embodying increased knowledge [@clarke2007; @slough2019]. On the other hand, there has been considerable push back at models that appear to be baroque and less easy to explain than tried-and-true ordinary least squares (OLS) regression [@angrist2008]. Maximum entropy helps explain these mixed feelings: we should prefer more complex models over simple models because our over-arching aim should be to reduce entropy, and more complex models have less entropy. On the other hand, we do not want to reduce entropy without a good reason lest we over-state our certainty [@frank2009]. -->
 
@@ -301,47 +391,9 @@ To apply these metrics, a minimal preregistered causal *system* must have at lea
 
 <!-- We can further extend this discussion by considering the mechanisms implied by the edges. Instead of treating the edges as solely representing causal relationships, we could imagine a distribution over mechanisms for each edge. We could similarly decrease our entropy over mechanisms by learning which mechanisms are the most likely and least likely for a given node. Uncertainty over mechanisms could then be weighted with the overall association probability as entropy is additive on the log scale. -->
 
-Once the analyst has chosen the set of variables which pertain to the research question, it is possible to calculate entropy of the preregistered causal graph and a causal graph that is estimated after the new data are collected. I now formally define the causal entropy measure as the Shannon entropy $H(\cdot)$ of an ordered set of variables (nodes) $\{x_1, ... x_N\}$ that can be represented by a causal graph $v$ which meets all of Pearl's requirements: it includes a set of directed edges $e \in E$ between each variables $x_i$ in the graph and is acyclic. Because the graph is ordered, there is necessarily at least one terminal node that represents the outcome that the graph seeks to explain. We can then take the Shannon entropy $H(\cdot)$ of the joint distribution of these variables (indexed by $i \in N$) with respect to a given terminal node or outcome, which can be denoted $P(v)$, following Pearl's notation:
+Once the analyst has chosen the set of variables which pertain to the research question, it is possible to calculate entropy of the preregistered causal graph and a causal graph that is estimated after the new data are collected. As I show in the case study, the R package `elicitcausal` and accompanying web application simplify the process of creating these graphs and calculating associated metrics so that little if any knowledge of conditional probability is required.
 
-\begin{equation}
-\label{entgraph}
-H(P(v)) = - \sum_{i=1}^N P(x_i | pa_i) \text{log}P(x_i | pa_i)
-\end{equation}
-
-Where the notation $P(x_i | pa_i)$ indicates that each component of $P(v)$ is the conditional distribution of each variable $x_i$ in $V$ with respect to the set of its ancestors $pa_i$ that are causally relevant to $x_i$. Due to the Markov property of causal graphs [@pearl2000, Ch. 1], we only need to consider the immediate set of ancestors as causally relevant, which significantly simplifies the construction of conditional probabilities for a given $x_i$. Because $P(v)$ is a joint distribution over all such relations, it meets the requirement that the probabilities of all of the causal relations sum to 1.
-
-Formally, we can then consider preregistered and post-study causal graphs as representing two different joint distributions, such as $P(v)$ and $P(v')$. We can state that a research design that results in $P(v')$ creates more type I causal knowledge than the preregistered causal graph $P(v)$ iff:
-
-\begin{equation}
-\label{greaterent}
-H(P(v)) < H(P(v'))
-\end{equation}
-
-Conversely, to understand type II causal learning, we need a measure of cross-entropy, or comparing the entropy of two distributions. We can suppose first that we have a maximum causal entropy distribution $P(q)$ for a given causal graph which represents a state of maximum uncertainty about the causal process. We also suppose that the current state of the research field accepts a reduced causal entropy distribution $P(v) | H(P(v)) < H(P(q))$, but this distribution is based on flawed data or assumptions, resulting in overconfidence.
-
-We could obtain type II causal learning if we were to implement a replication study $P(v'')$ that results in higher entropy than our preregistered causal graph $P(v)$, bringing us closer to the maximum entropy of $P(q)$ [@kadtReplicationInstrumentallyInclusive2025]. With the maximum entropy distribution $P(q)$ as our baseline, the amount of type II causal learning we obtain depends on how much the Kullback-Leibler divergence $D_{KL}(P(q) \mathrel{\Vert} P(v))$ decreases from the maximum entropy distribution following the replication $P(v'')$:
-
-\begin{equation}
-\label{kldiverge}
-H(P(q)) + D_{KL}(P(q) \mathrel{\Vert} P(v)) > H(P(q)) + D_{KL}(P(q) \mathrel{\Vert} P(v''))
-\end{equation}
-
-In other words, if our replication exercise $P(v'')$ raises our uncertainty about the causal graph $P(v)$ relative to the limiting case of the maximum entropy distribution $P(q)$, then we can say that we have obtained type II causal knowledge in that we are no longer overconfident about the causal process. This notation shows how we could quantify such an increase in knowledge; it does not specify under what standards we would believe $P(v'')$ to be more credible than $P(v)$. As mentioned previously, entropy is about understanding the relative level of type I or type II causal learning from a given inference but is not a criterion for deciding which inferences are based on credible information. What we gain from this framework is primarily a way of comparing the total learned about a preregistered causal graph once we observe the data.
-
-Estimating type II learning requires a maximum entropy distribution as a the baseline, but these are relatively easy to derive for most cases. As was shown in @fig-dement, the uniform distribution is the maximum entropy distribution if there is no other structure or information to be taken into account. In the case studies that follow, I will use the uniform distribution as the maximum entropy distribution, or what I will refer to as the "null" graph. The Normal or Gaussian distribution is the maximum entropy distribution for any continuous variable with finite variance [@jaynes2003], and so it can serve as a null graph in the case in which units are not discrete probabilities.
-
-In the appendix, I provide a tutorial with R code showing how to calculate these quantities given different causal graphs. I further show in the appendix how the framework of @humphreys2023 can model causal systems in which there is uncertainty in the probability of edges between nodes via the Dirichlet distribution.
-
-<!--# One complication is that entropy is only defined over discrete variables. However, it is straightforward to calculate the entropy of a continuous variable through a binning procedure, and the measure is available via a wide array of statistical software packages [@hausser2021].   -->
-
-<!--# ; this methodology permits statistical inference on changes in type I and type II causal learning for different research designs, though it also requires the specification of prior distributions over nodes in the causal graph.   -->
-
-Once we have defined these forms of learning about causal systems, we could even further define an optimal research design $q^*$ as that which maximizes a research utility function for entropy minimization (type I causal learning) given a preregistered graph $P(v)$, a set of plausible research designs $Q = \{P(v_1),P(v_2), P(v_3) ... P(v_N)\}$, and a mapping of costs for each research design $C = \{c_1,c_2, c_3 ... c_N\}$ where we select the research design that maximizes type I learning given a budget constraint $B$:
-
-\begin{align}
-q^* = \text{arg max}_{q \in Q} &U_i(B - c_q - H(q))\\
-\text{s.t. }&U_i(\cdot) > 0
-\end{align}
+As I discuss next, one of the main advantages of a holistic measure like entropy is that it can incorporate many possible interactions between variables in a causal graph, permitting more open-ended exploratory research without resulting in false positives.
 
 ## Preregistration of Entropy and Causal Graphs
 
@@ -361,268 +413,157 @@ However, if $G$ was in the causal graph—even if the preanalysis plan did not i
 
 <!-- Before proceeding, however, it is important to return to the maximum entropy criterion. In all of the case studies that I show, I assume that we do not become over-confident and reduce entropy further than we should, i.e., more than "natural" randomness. This type of outcome could occur if the evidence or data we obtain from a study is faulty in some way. As such, entropy is best used as a metric for evaluating different research designs assuming that the designs are implemented appropriately. Practically, this type of analysis would be most useful for either meta-analyses of research findings that compares different studies on one causal graph, as I do in the following case studies, or for preregistering research designs to show what the potential causal learning would be before undertaking a study. It is possible to also consider integrating this criterion into power analyses when multiple research designs are plausible candidates. -->
 
-## Case Study: COVID-19 Vaccines
+## Case Study: Deviation from Preregistration in Study of Replicability
 
-To make this method concrete, I next provide a case study of how causal graphs and entropy calculations can be applied to actual research problems. In addition to the case study described in this section, I include a case study in SI Section 2 with a more complex causal graph. While these case studies do not have preregistered causal graphs as this method of preregistration is new, they do reveal how to construct a preregistered causal graph for a given research design and how to incorporate experimental, observational, and even qualitative analyses into the calculation of causal learning via entropy.
+To make this method concrete, I next provide a case study of how causal graphs and entropy calculations can be applied to an actual research problem by examining the previously-cited controversy surrounding issues of preregistraiton deviation in the @protzko2024 study of replications. In addition to the case study described in this section, I include two additional case studies in SI Section 2 with more complex causal graphs and more details about the mathematical foundations of the calculations in SI Section 1.
 
-The case study used here is derived from the outbreak of the COVID-19 pandemic because the pandemic offers an important test case for large-scale research designs. The extreme pressures of this exogenous shock is the reason why I choose this particular area of research even though it is not a part of the social sciences proper. In addition, the massive levels of funding available from governments overcame one of the most common non-methodological factors in determining research designs, permitting issues of inference to become relatively more important.
+The intention of this case study is to make the method practical to the reader. This study, which was formally retracted by *Nature Human Behavior* after it was criticized by the scientific community, serves as an excellent test case for this method given that the preregistration deviations surprised many scholars. The authors of the article were very well-known in the open science community, and indeed were partly responsible for the elevation of preregistration as a method.[^3] Furthermore, the study had, generally speaking, quite a thorough preregistration process, with a pre-analysis plan totaling 2,700 words and a separate study design document of over 10,000 words. The level of detail far exceeds most preregistrations in published work, and the pre-analysis plan included three very specific hypotheses and a detailed linear regression specification to match.[^4]
 
-Although there are many possible research questions, in this case study I focus on one crucial area: the development of vaccines. At first blush, it would seem that vaccines are a relatively straightforward exercise in terms of research design. After months of development, the drug companies Pfizer-BioNTech and Moderna released studies describing massive RCTs employing hundreds of thousands of volunteers over months. These studies provided concise and clear numbers concerning *vaccine efficacy* or the ratio of infected individuals in the treatment group to the number infected in the control group [@polack2020; @baden2021]. Because the control group never received a vaccine, the difference between the two groups could be directly attributed to the drug.
+[^3]: See <https://statmodeling.stat.columbia.edu/2024/09/24/well-today-we-find-our-heroes-flying-along-smoothly/> for more info.
 
-```{r dag1,echo=FALSE,warning=FALSE,fig.cap='Directed Acyclic Causal Graph for Confounded Vaccine Uptake',message=FALSE}
-#| label: fig-dag1
-unctrl <- "T I Z"
-ctrl <- "T"
+[^4]: The preregistration is available from this link: <https://osf.io/5e6nw/files/ba8p7>.
 
-# paths
-meas <- "T -> I     
-          Z -> T"
-unmeas <- "Z -> I "
+::: {#tbl-causal-paths}
+| Causal Path \| Preregistration Passage \| Prior
 
-output <- makeDAG(dagname='example1',filetype='png',
-        text.nodes=unctrl,
-        solid.edges = meas,
-        dashed.edges=unmeas,
-        embed=T,width = 1100, height=600)
+| Confidence |   |   |
+|------------------------|------------------------|------------------------|
+| **O → Y** | “We predict effect sizes to be smaller in the second 750 participants than in the first 750 participants... the decline is caused by a study being repeatedly run (i.e., an exposure effect)”. | Low |
+| **B → O → Y** | “For blinded studies, data were collected but no analysis was conducted until all replications were completed.” | Uncertain |
+| **N → O → Y** | “the decline is caused by a study being repeatedly run (i.e., an exposure effect)” | Uncertain |
+| **L → Y; L → O → Y** | “fixed effect for each lab, representing the average effect size” | Uncertain |
+| **S → Y** | Sample size (unmentioned) | High |
+| **R → Y** | Preregistration of study design (unmentioned) | High |
 
-knitr::include_graphics('example1.png',dpi=300)
-```
+: Causal Diagram Based on Preregistration in @protzko2024
+:::
 
-In causal terms, this RCT solved a difficult yet well-known problem in studying COVID-19 infections: those who voluntarily participate in a COVID-19 vaccination study could be either more or less likely to be infected compared to those who would not want to volunteer for a vaccine. To give just one example, younger individuals showed less interest in vaccines compared to older individuals and were also much less likely to become severely ill. On the other hand, younger people may have been more likely than older people to contract a COVID-19 infection because they had less fear of serious illness or death. As a result, any naive comparison of a group of volunteers and the general population could end up conflating age differences with vaccine uptake [@hodgson2021; @baack2021].
+```{r}
+#| label: fig-dagreg
+#| fig-cap: "Proposed Causal Graph for Protzko et al. (2024)"
+#| fig-width: 6
+# packages
+  library(dagitty)                                                              
+  library(tibble)                                                               
+  library(elicitcausal)
+library(ggdag)
 
-This causal identification problem is a straightforward example of confounding, as shown in @fig-dag1. Any variable which could explain both vaccine uptake and the incidence of COVID-19 would be a confounding variable, and without confidence that we can collect data on and measure all confounding variables, we may not be able to identify the direct relationship between the vaccination and efficacy. We can then use @fig-dag1 as our preregistered (a priori) causal graph as it represented established theories related to the nature of vaccine uptake.
+  edge_probs <- tribble(
+    ~from, ~to,  ~prob,
+    "O",   "Y",  0.25,
+    "B",   "O",  0.50,
+    "N",   "O",  0.50,
+    "L",   "Y",  0.50,
+    "L",   "O",  0.50,
+    "S",   "Y",  0.75,
+    "R",   "Y",  0.75
+  )
 
-Given the identification problem, it is unsurprising that RCTs were the primary means used to determine the $T \rightarrow I$ path. The Pfizer-BioNTech and Moderna trials proved to be a paragon of RCT methods, showing remarkably strong effects of the vaccine on efficacy, above 90%. This type of causal analysis was about as rigorous as possible for determining the precise nature of this bivariate relationship. At this point in the narrative, it would seem that RCTs were the only needed type of analysis for this causal graph: we had established that the vaccines worked, and now we could move forward with ending the pandemic. Indeed, such sentiments were common when the vaccines were introduced, leading to a relaxation of restrictions in the summer of 2021 [@bauer2021; @tregoning2021].
+  dag <- dagitty("dag { B -> O; L -> O; L -> Y; N -> O; O -> Y; R -> Y; S -> Y
+  }")
 
-Fairly quickly, however, it became evident that the RCTs themselves were not sufficient to answer all the questions about vaccine efficacy. There were two main problems: first, people wanted to know how the vaccine performed *in the population*, which required attention to the confounding variables that the RCT successfully ignored [@hungerford2021], i.e., the role of the vaccine in the broader causal system. Second, the arrival of vaccine variants forced a re-evaluation of the vaccines' efficacy as RCT trials could not be run fast enough to keep up with new variants [@andrews2022]. These issues required additional analyses which could be considered non-preregistered (at least in terms of the original RCT)--yet they were very important for understanding the relevant causal process.
+g <- dagitty(dag)
 
-|                | I = Infected | I = Not Infected |
-|----------------|--------------|------------------|
-| T = Vaccine    | .15          | .85              |
-| T = No Vaccine | .85          | .15              |
+# ---- 3) tidy for plotting, then attach edge labels (probabilities) ----
+td <- tidy_dagitty(g,layout="tree")  # node + edge coords for ggplot
 
-: $Pr(I|T,Z=\text{Old})$
+td <- td$data %>%
+  # ggdag uses 'from' and 'to' in the edge data
+  left_join(edge_probs, by = c("name"="from", "to")) %>% 
+  mutate(exploratory=if_else(name %in% c("S","R"),"dashed","solid"),
+         exploratory_node=if_else(name %in% c("S","R"),"Added","Original"))
 
-To describe these studies in terms of learning about causal systems, we can calculate the entropy reductions of these different interventions on a causal graph. For simplicity, I will take as my starting point the causal graph in @fig-dag1, where the nodes are labeled as $T$ for vaccine, one outcome, $I$ for infection, and a confounder $Z$ , which I will consider to be age. To simplify matters, I will treat each variable as having two discrete values.
+# ---- 4) plot with ggdag; add edge labels ----
+p <- ggplot(td,aes(y=y, x=x, xend=xend, yend=yend)) +
+  geom_dag_edges(aes(edge_linetype=exploratory),label.padding = unit(0.10, "lines"),
+                 hjust=1) +
+  geom_dag_node(aes(label=name,shape=exploratory_node)) +
+  scale_shape(name="") +
+  coord_cartesian(clip="off") +
+  geom_dag_text(aes(label = name), size = 3) +
+  theme_dag() + theme(legend.position = "top")
 
-To analyze the entropy of the causal process that produces $I$, we need to create the conditional probability distribution given the two nodes that both directly affect $I$. Tables 1, 2, and 3 show conditional probability distributions for the three variables with plausible values. To analyze the relationships in the causal graph, we need to consider two conditional probabilities, $Pr(I|V,Z)$ and $Pr(T|Z)$, and one unconditional probability, $Pr(Z)$. Because the first conditional probability involves two conditioning variables $V$ and $Z$, I separate this distribution of $I$ into two separate tables for Young and Old subjects as can be seen in Tables 1 and 2.
+p
 
-|                | I = Infected | I = Not Infected |
-|----------------|--------------|------------------|
-| T = Vaccine    | .02          | .98              |
-| T = No Vaccine | .98          | .02              |
-
-: $Pr(I|T,Z=\text{Young})$
-
-|           | T = Vaccine | T = No Vaccine |
-|-----------|-------------|----------------|
-| Z = Young | .1          | .9             |
-| Z = Old   | .9          | .1             |
-
-: $Pr(T|Z)$
-
-I assume here that these are the true probabilities of treatment efficacy and the confounding effect of age on vaccine uptake. It is important to note, too, that age also affects vaccine efficacy, with the vaccine more efficacious among the young than the old, as studies have shown [@bell2022]. To calculate entropy, we will need to start with a prior distribution representing what we think these relationships could be, or what I will call the null graph. For simplicity, I will assume a uniform prior for the null graph, i.e., that all of the probabilities in the tables are equal to exactly 0.5. While not shown, I can calculate the entropy by considering the full joint distribution of the causal graph, which involves creating a much larger table for all values of $Z$, $T$, and $I$, i.e. $P(I,Z,T) = P(I|T,Z) P(T|Z)P(Z)$. For reference, I also assume that the population is 25% young and 75% old for $P(Z)$.
-
-```{r calc_ent_caus1}
-
-prob_out_true <- tibble(pr_joint=c(.25*.02*.1,
-                              .25*.98*.9,
-                              .25*.98*.1,
-                              .25*.02*.9,
-                              .75*.15*.9,
-                              .75*.85*.1,
-                              .75*.85*.9,
-                              .75*.15*.1),
-                   I = c("I","I","H","H","I","I","H","H"),
-                   `T` = c("T","C","T","C","T","C","T","C"),
-                   Z = c("Young","Young","Young","Young","Old","Old","Old","Old"))
-
-prob_out_prior <- tibble(pr_joint=rep(1/8,8),
-                   I = c("I","I","H","H","I","I","H","H"),
-                   `T` = c("T","C","T","C","T","C","T","C"),
-                   Z = c("Young","Young","Young","Young","Old","Old","Old","Old"))
-
-T0 <- .98*.25 + .85*.75
-T1 <- .02*.25 + .15*.75
-                   
-prob_out_treat <- tibble(pr_joint=c(.5*T0*.5,
-                              .5*T1*.5,
-                              .5*T0*.5,
-                              .5*T1*.5,
-                              .5*T1*.5,
-                              .5*T0*.5,
-                              .5*T0*.5,
-                              .5*T1*.5),
-                   I = c("I","I","H","H","I","I","H","H"),
-                   `T` = c("T","C","T","C","T","C","T","C"),
-                   Z = c("Young","Young","Young","Young","Old","Old","Old","Old"))
-
-ent_orig <- -sum(prob_out_prior$pr_joint*log(prob_out_prior$pr_joint,1.01))
-ent_true <- -sum(prob_out_true$pr_joint*log(prob_out_true$pr_joint,1.01))
-ent_treat <- -sum(prob_out_treat$pr_joint*log(prob_out_treat$pr_joint,1.01))
-
-prob_out_true_mech <- bind_rows(prob_out_true, prob_out_true, .id="Omega") %>% 
-  mutate(pr_joint=pr_joint*rep(c(0.1,0.9),each=n()/2))
-
-prob_out_mech_prior <- bind_rows(prob_out_prior, prob_out_prior, .id="Omega") %>% 
-  mutate(pr_joint=pr_joint*rep(c(0.5,0.5),each=n()/2))
-
-prob_out_true_no_mech <- bind_rows(prob_out_true, prob_out_true, .id="Omega") %>% 
-  mutate(pr_joint=pr_joint*rep(c(0.5,0.5),each=n()/2))
-
-prob_out_treat_no_mech <- bind_rows(prob_out_treat, prob_out_treat, .id="Omega") %>% 
-  mutate(pr_joint=pr_joint*rep(c(0.5,0.5),each=n()/2))
-
-prob_out_treat_mech <- bind_rows(prob_out_treat, prob_out_treat, .id="Omega") %>% 
-  mutate(pr_joint=pr_joint*rep(c(0.1,0.9),each=n()/2))
-
-ent_true_mech <- -sum(prob_out_true_mech$pr_joint*log(prob_out_true_mech$pr_joint,1.01))
-ent_prior_mech <- -sum(prob_out_mech_prior$pr_joint*log(prob_out_mech_prior$pr_joint,1.01))
-ent_true_no_mech <- -sum(prob_out_true_no_mech$pr_joint*log(prob_out_true_no_mech$pr_joint,1.01))
-ent_treat_no_mech <- -sum(prob_out_treat_no_mech$pr_joint*log(prob_out_treat_no_mech$pr_joint,1.01))
-
-ent_treat_mech <- -sum(prob_out_treat_mech$pr_joint*log(prob_out_treat_mech$pr_joint,1.01))
-
-# now try with causal queries
-
-cq_orig <- make_model("T -> Y; Z -> T; Z -> Y")
-cq_true <- make_model("T -> Y; Z -> T; Z -> Y")
-
-# Z1 = Old
-# T1 = Treated
-# Y1 = Infected
-
-cq_true <- set_parameters(cq_true,
-                          parameters=c(.25,.75),
-                          node="Z",nodal_type=c("0","1")) %>% 
-          set_parameters(parameters=c(.9*.1,.1*.1,.9*.9,.1*.9),
-                         node="T",
-                         nodal_type=c("00","10","01","11")) %>% 
-  set_parameters(parameters=c(.02*.15*.98*.85, # 0000
-                              .98*.15*.98*.85, # 1000
-                              .02*.85*.98*.85, # 0100
-                              .98*.85*.98*.85, # 1100
-                              .02*.15*.02*.85, # 0010
-                              .98*.15*.02*.85, # 1010
-                              .02*.85*.02*.85, # 0110
-                              .98*.85*.02*.85, # 1110
-                              .02*.15*.98*.15, # 0001
-                              .98*.15*.98*.15, # 1001
-                              .02*.85*.98*.15, # 0101
-                              .98*.85*.98*.15, # 1101
-                              .02*.15*.02*.15, # 0011
-                              .98*.15*.02*.15, # 1011
-                              .02*.85*.02*.15, # 0111
-                              .98*.85*.02*.15), # 1111
-                 node="Y",
-                 nodal_type=c("0000","1000",
-                              "0100","1100",
-                              "0010","1010",
-                              "0110","1110",
-                              "0001","1001",
-                              "0101","1101",
-                              "0011","1011",
-                              "0111","1111"))
-
-# update default prior with the experiment (Y[X==1] - Y[X==0] = T1 - T0)
-# treatment effect of -76.5% vaccine incidence
-
-cq_treat <- set_parameters(cq_true,
-                          parameters=c(.5,.5),
-                          node="Z",nodal_type=c("0","1")) %>% 
-          set_parameters(parameters=c(.25,.25,.25,.25),
-                         node="T",
-                         nodal_type=c("00","10","01","11")) %>% 
-  set_parameters(parameters=c(.1175*.1175*.8825*.8825, # 0000
-                              .8825*.1175*.8825*.8825, # 1000
-                              .1175*.8825*.8825*.8825, # 0100
-                              .8825*.8825*.8825*.8825, # 1100
-                              .1175*.1175*.1175*.8825, # 0010
-                              .8825*.1175*.1175*.8825, # 1010
-                              .1175*.8825*.1175*.8825, # 0110
-                              .8825*.8825*.1175*.8825, # 1110
-                              .1175*.1175*.8825*.1175, # 0001
-                              .8825*.1175*.8825*.1175, # 1001
-                              .1175*.8825*.8825*.1175, # 0101
-                              .8825*.8825*.8825*.1175, # 1101
-                              .1175*.1175*.1175*.1175, # 0011
-                              .8825*.1175*.1175*.1175, # 1011
-                              .1175*.8825*.1175*.1175, # 0111
-                              .8825*.8825*.1175*.11755), # 1111
-                 node="Y",
-                 nodal_type=c("0000","1000",
-                              "0100","1100",
-                              "0010","1010",
-                              "0110","1110",
-                              "0001","1001",
-                              "0101","1101",
-                              "0011","1011",
-                              "0111","1111"))
-
-q1 <- query_model(cq_treat, queries = "Y[T=0] - Y[T=1]")
-
-# q1$mean should be identical to T0 - T1
-        
-
-get_entropy <- function(model, parameters = NULL) {
-  p <- get_event_prob(model, parameters)
-  -sum(p*log(p,base = 1.01))
-}
-
-# note that mechanisms don't exist, we would have to add these to 
-# the framework, relatively easy to do though
-
-# adding in priors would allow us to be a bit more specific
 
 ```
 
-Calculation of Shannon entropy[^2] indicates that the null prior graph has an entropy of `r round(ent_orig, 0)`, while the true graph has an entropy of `r round(ent_true, 0)`. These two figures give us the relative space within which we can plausibly learn about this outcome. If we end up with an entropy of less than `r round(ent_true, 0)`, we will be over-confident, inferring causality to what are in fact random events. Respecting the lower bound reflects the principle of maximum entropy discussed earlier: we should not want to be more certain of conclusions than the underlying causal process permits.
+The study design for @protzko2024 involved an innovative team science design that aimed to study replication in a controlled environment. Per the preregistration, four separate laboratories implemented an experiment of their choosing, then replicated that experiment internally, which was followed by external replications of their experiment by the other laboratories. The primary outcome was the extent to which the estimated effect size in the original study would decline following replication, either by the original lab or an external lab. The results of the meta-experiment showed a very high rate of replication; over 80% of statistically significant findings were later replicated by external labs. After acceptance, the study was trumpeted by the open science community as an example of open science practices leading to higher replicability.
 
-[^2]: R code showing how to reproduce all calculations in this case study will be included with the article upon publication.
+The trouble began after @bak-colemanClaimsScientificRigour2024 criticized the article for departing from its preregistration. Bak-Coleman and Devezer pointed out that the preregistration intended to test a theory that it called the "observer effect"; namely, whether researchers can influence the replicated effects solely by observing them. This bizarre theory apparently came from parapsychology practitioners who believed that "the mere act of scientific observation somehow causes effects to wear off over time."[^5] Perhaps even more bizarre, none of the people who implemented the study believed this theory; apparently they explicitly tested in order to obtain funding from well-heeled parapsychology fans to run the massive replication study design. As a result, as @bak-colemanClaimsScientificRigour2024 pointed out, the claimed findings in the published paper are very much out of sync with the preregistration, *which did not in fact contain any hypotheses about the effect of open science practices on the replication rate.* Granted, the results of the study did not show any parapsychological results—researcher's expectations clearly did not affect the replication rate—but these results were buried in the supplemental information before the finished version was published.
 
-In this case study and the one that follows, though, I will focus on type I causal learning. We can directly calculate the reduction in entropy for the experimental analysis of the vaccine by inserting values of the conditional probability distributions from the true graph for $P(I|T,Z)$ into the null graph. By adding in the true values for the conditional distribution, not just the average treatment effect, I assume that the treatment was high-powered enough to inform us about the true joint distribution of both the treatment and the potential confounder, age, as seemed to be true for most of the vaccine trials with tens of thousands of subjects enrolled. The entropy of this high-powered experimental analysis is `r round(ent_treat,0)`, which is only 19% larger than the true entropy. As such, the experimental technique was clearly a powerful way of learning about this causal process.
+[^5]: See <https://www.chronicle.com/article/this-study-was-hailed-as-a-win-for-science-reform-now-its-being-retracted?sra=true>.
 
-```{=html}
-<!-- First, consider the outcome of the massive number of experiments performed on elections, canvassing and voter behavior in American politics. @kalla2018 recently documented how 49 field experiments produced an average null effect of campaign advertisements and mailings on voter behavior. This finding is of course puzzling as campaigns spend a large amount of money to do what this study says is on average unlikely to occur: affect voter choices in an election.
+My aim in addressing this case study is not to re-litigate the dispute; ultimately the article was retracted while the journal invited a new submission with a separate framing. Instead, I want to show how the method of preregistration of causal graphs, combined with robust metrics like entropy, could help avoid preregistration violations (and in this case, make clear the study's design issues).
 
-This study is fascinating as it represents a field where the application of experiments has reached a far greater depth than other areas of political science. In this case, it would seem that we could reduce entropy to a greater degree in the study of voter behavior by looking at other methods than experiments, either observational large-N analysis or qualitative research aimed at identifying subsets of voters for interviews. Part of the problem, as the authors of the study note, is that there is widespread treatment heterogeneity, which is shorthand for a large number of background factors that also affect the success of the treatment. Observational and qualitative analysis could help uncover what these background factors are, such as broad geographical, economic or cultural factors, or very specific group or individual-level mechanisms that the treatment is interacting with. In other words, observational analysis could help situate the experimental findings within a broader theory as some have called for in psychology [@muthu2019].
+First, I use the `elicitcausal` web app[^6] to construct a plausible causal graph from the preregistration *and* the final published article; that is, the full theory that the researchers had in mind but was never committed to writing. The final node in the graph, denoted $Y$, represents the pregistered outcome of whether or not estimated effects would decline following multiple replications. For the purposes of representing the theory, I use binary operationalization for all variables, so $Y=1$ if the replication rate declines and $Y=0$ otherwise. I include the primary preregistered independent variable, the observer effect (parapsychology), as $O$, and include the particular randomizations employed in the study design, such as blinding of study results and repeating studies multiple times, as attempts to influence the outcome of replication rate $Y$ via the observer effect $O$. That is, properly speaking, the aim of the preregistration was to see whether an observer effect existed by repeating experiments (variable $N$) and blinding results from labs (variable $B$); these variables should only affect the replication rate via $O$, though the researchers do not have measures of $O$ and therefore cannot test for a mediation effect.
 
-Conversely, we can consider a situation where observational and qualitative analysis has been remarkably widespread: the study of democratization. @coppedge2012 documents the wide variety of statistical models fit to ever-increasing datasets, including most recently the Varieties of Democracy of Project [@vdem2017]. In addition, countless country-level case studies of democratic processes exist in the scholarly literature dating back to the origins of comparative political science [@Moore2003]. Yet there are relatively few if any experiments on building democratic institutions and on encouraging support for democracy as opposed to authoritarian politics, which suggests that entropy could be further reduced in this field by considering more experimental approaches. -->
-```
+[^6]: Available at <https://causal.wilddata.solutions/>
 
-However, the analysis left important information unanswered on the causal graph, in particular, what the relationship is between vaccine uptake and age. While the relative entropy would seem small, it is still an appreciable amount, and when vaccines were deployed to the population, it became a crucial factor for understanding the success of the vaccines [@hodgson2021]. If sicker people were more likely to take the vaccine, then the measures of vaccine efficacy from the total population would understate the efficacy of the vaccine. Understanding how the vaccine interacted with population demographics required obtaining data about vaccine uptake in the "real world" [@chodick2021], especially to combat misinformation about the efficacy of the vaccine by anti-vaccination groups. For this reason, it is clear that even though the most important question about the vaccine was answered by an RCT, there was ample room for observational studies that collected data on the spread of the vaccine and relative rates of COVID-19 incidence in the population.
+The authors of the study included in their preregistered linear model specification a fixed effect (dummy variable) for each laboratory, which is another independent variable that predicts the replication rate $Y$. I include two additional variables, sample size ($S$) and preregistrations for studies ($R$), that separately predict replication rate $Y$ based on the final published paper, although these variables were not in the original preregistration and for that reason I use dotted lines and different node shapes to distinguish them. These causal relationships listed in @tbl-causal-paths and in graphical form in @fig-dagreg.
 
-Ultimately, these observational studies were necessary to uncover the remaining entropy in the causal graph, equivalent to a `r round(ent_treat,0) - round(ent_true,0)`% reduction in entropy. While this reduction was not as large as the reduction due to the experiment, it is important to note that this reduction could not be obtained from the experiment itself as it involved fixing the vaccine node $V$ to a particular value, such as with Pearl's $do$ operator. In this case, causal identification by fixing $T$ to a specific value in an RCT prevented any analysis of the $P(T|Z)$ relationship because by definition it removed that causal arrow from the graph. For this reason, an observational analysis that established the $P(T|Z)$ relationship---varying vaccine interest by age---would likely be labeled as potential $p$-hacking if it had not been explicitly preregistered. However, this distinction is relatively arbitrary when we consider learning about the causal system as a whole.
+To create a causal graph from this theory, I can employ the `elicitcausal` web app. The app allows the user to create directed a-cyclic graph using either R code via the `dagitty` package or via a point and click interface as shown below.
 
-Finally, it is important to note that mechanistic analysis also played an important role in determining the efficacy of vaccines in the pandemic. As mentioned earlier, the success of the vaccines waned depending on the mutations of the virus, and it was infeasible to keep running large RCTs for each variant. This is a kind of threat to inference that is rarely discussed, and could be described as "temporal validity" [@munger2019]. To address this problem, scholars examined whether the same mechanism underlying the vaccine's efficacy also occurred in the same way with variants, namely, the production of virus-neutralizing antibodies. These studies were not necessarily statistical in nature, involving close examination of relatively small numbers of petri dishes with new SARS-CoV-2 variants in blood that had vaccine-induced antibodies [@yadav2021; @hoffmann2022]. Furthermore, these studies could not be directly integrated into the causal graph examined above because they refer to factors that are not present on the graph itself, i.e., minuscule changes in antibody levels.
+![](causal_graph_spec.png){fig-align="center"}
 
-In SI Section 1, I provide a formal method for including mechanisms in the calculation of causal graph joint probability distributions, so I refer the reader to this section for a more complete treatment of this problem. In brief, we can expand the analysis to incorporate the antibody mechanism if we give it two values, High and Low. With these two values in the set $\Omega$, we can then calculate the entropy of the combined causal graph conditional on this mechanism for the relationship between vaccine $V$ and infections $I$:
+The web app then allows users to add informative labels to the edges and nodes in the graph before eliciting probabilities about relationships:
 
-\begin{equation}
-H(P(I,Z,T,\Omega)) = H(P(I|T,Z)P(\Omega|T)P(T|Z)Pr(Z))
-\end{equation}
+![](add_labels.png){fig-align="center"}
 
-If we start with a null graph where the probability of $\Omega=\text{High}$ is 0.50, and the true value is 0.9, then we have null and true entropy values of `r round(ent_prior_mech,0)` and `r round(ent_true_mech,0)` respectively. If we performed the experiment successfully but without learning about mechanisms, we would obtain an entropy value of `r round(ent_treat_no_mech,0)` while an experiment that also involved learning about mechanisms would result in an entropy of `r round(ent_treat_mech,0)`, or `r round(ent_treat_no_mech,0) - round(ent_treat_mech,0)`% less. As can be seen, even with a single mechanism, relatively large reductions in entropy are possible by obtaining evidence of its true value. The reason for this large reduction is due to the fact that we know that the mechanism must be present for the causal story to hold about immunological response.
+Once this step is complete, the user can then describe each causal relationship in the graph by either specifying the probability directly using a slider:
 
-<!--# Of course, it could always be possible to look at antibodies as a mediator and expand the causal graph, allowing us to use mediation analysis to formally test for whether antibodies mediate the vaccine [@imai2010; @tj2016]. What is important, however, is that statistical tests were not necessary to make evidentiary statements about the presence or absence of the proposed mechanism. The proximity of observation and the logical necessity of antibody levels changing helped obtain causal inference about the performance of the vaccine against new variants even if there was no uncertainty interval or p-value attached. Statistical methods may not work well in this mode of inference because the attention to micro-processes often entails serious limitations in data collection in favor of richly textured information [@collier2010].   -->
+![](uni_prob.png){fig-align="center"}
 
-<!--# The point of this case study was not to argue that one mode of inference was superior to the other, but rather how each kind--experimental, observational, and mechanistic--played a valuable role in type I learning about a causal system that explained the level of infections at a given point in time. While the RCT achieved the highest reduction in entropy of the causal system, other modes of inference had an important role to play even if they were not part of the original RCT study design. Once cost-benefit factors are included, such as the need to learn about efficacy against new variants for the purposes of booster shots, smaller overall changes in entropy can still be very important from a social welfare perspective.   -->
+or for more involved cases with multiple independent variables, place the variables in buckets for no effect, positive effect, or negative effect (see below). The user can also rank the variables within each bucket to indicate the strength of the relationship.
 
-In the appendix I include an additional case study examining research into the relationship between authoritarianism and the role of natural resources in rentier regimes. This case study employs a more sophisticated causal graph relative to the one previously described and likewise shows how different varieties of research designs, including experiments and process-tracing, can yield varying yet important amounts of learning about causal systems. With preregistration, these metrics could help make exploratory analyses of equal importance to more conventional falsificationist tests without privileging one or the other.
+![](ranking.png){fig-align="center"}
+
+I input probabilities into the web app that correspond to my reading of the preregistration. First, for any variables that are exogenous (i.e., are not caused by other variables), I use a 0.5 neutral probability. These probabilities indicate what the prevalence of these variables is in the population that I am studying, or for a trial, what is the split between treatment and control. While potentially very useful for causal graphs that incorporate information about samples and populations, for this exercise I leave these as uninformative (0.5) probabilities.
+
+Next, for the effect of blinding $B$ and repeated replication $N$ on the observer effect $O$, I use the ranking method to give $B$ a negative predicted effect on $O$ (blinding should make it difficult for the observer effect to occur) and $N$ a positive effect, i.e., multiple trials should provide more opportunities for the observer effect to manifest.
+
+Eliciting probabilities for the outcome is more involved as there are four possible predictors of the outcome ($O$, $S$, $R$, and $L$). Given that each variable is binary, that yields 16 possible combinations to consider. For these reasons, I use the ranking method to make the exercise tractable (the individual probabilities can be further adjusted after ranking if need be). I put the preregistered causal effect of $O$ in the "no effect" bucket, meaning that I did not think that observing research results should have any effect on the outcome. For the non-preregistered variables $R$ (preregistered) and $S$ (sample size), I made them both negative predictors of a replication rate decrease (they should increase the replication rate). I also listed the lab effect $L$ as decreasing the odds of a failed replication, and I imposed a ranking where sample size had the greatest effect, followed by lab quality and employing a preregistration.
+
+Once I had completed this step, I now have a fully specified causal graph which I can download as either a table for inclusion in the preregistration document or as an R object which I could later load into the app for recording any changes in probabilities after observing the results. In the web app, I can repeat the probability elicitation step by uploading the table or R object from the earlier steps.
+
+The post-study graph update reveals the shortcomings in the research design. First, the main hypothesized effect, $O$, was already listed as having no effect with respect to the outcome—so the fact that the study did not find evidence of $O \rightarrow Y$ did not increase causal learning. Second, while we had reason to believe prior to the study that $R$ (preregistration) and $S$ (high sample size) might increase the replication rate, there was no variation in these variables in the study. As a consequence, our priors are effectively unchanged without some comparison group that had lower sample sizes or did not implement preregistrations. The `elicitcausal` app as a result records zero causal learning, as shown in the table it produced below:
+
+For the non-preregistered causal variables sample size $S$ and preregistation $R$, I include relatively strong priors of $Pr(0.4)$. Again, with a binary operationalization, these priors imply that the use of a large sample $S=1$ or a quality preregistration $R=1$ should reduce deflation in replicated treatment effects $Y=1$. This prior reflects the researchers' experiences with open science practices and their beliefs that these practices should be efficacious at achieving a higher replication rate (which they later claimed in the published study). However, the prior is not as strong as for the observer effect: there is uncertainty as to how much open science practices increase replicability in a metascientific sense; that is a large part of the reason that the study received so much attention after it was published.
+
+Given these priors, it is straightforward to calculate entropy of the causal graph. Entropy functions are available in most statistical software packages, and I provide additional detail in the appendix for how to define causal graphs and entropy calculations with available packages in R such as `causalqueries` , `dagitty` and `theorytools`. Furthermore, while deriving some of the conditional probability distributions for complex causal graphs can be challenging, large language model coding tools are able to derive these calculations quite easily, as I show below.
+
+As mentioned previously, the study results showed that effect deflation, $Y=1$, did not in fact occur. Replicated effects were similar to original effects. These results match the researchers' priors on the $O \rightarrow Y$ relationship specifically as it was influenced by the experimental treatments $B$ blinding and $N$ repetition of studies over time. We could put an even lower prior on the $O \rightarrow Y$ relationship of $0.1$, though again, we could not update the $B \rightarrow O$ or $N \rightarrow O$ paths given that we do not have any specific measurements of the observer effect. That is, theoretically speaking, our treatments could have influenced this parapsychological construct, but even if they in fact did so, it would not matter as this construct does not seem to have any effect on the outcome.
+
+Given the very limited range of opportunity for causal learning, the `elicitcausal` app revealed an entropy difference of zero--no causal learning--as shown in @tbl-prereg-learn.
+
+::: {#tbl-prereg-learn}
+| Node      | Pre entropy (%) | Post entropy (%) | Delta (%) | Direction | Learning Type |
+|:-----------|-----------:|-----------:|-----------:|:-----------|:-----------|
+| B         |           69.66 |            69.66 |         0 | no change | No Learning   |
+| L         |           69.66 |            69.66 |         0 | no change | No Learning   |
+| N         |           69.66 |            69.66 |         0 | no change | No Learning   |
+| R         |           69.66 |            69.66 |         0 | no change | No Learning   |
+| S         |           69.66 |            69.66 |         0 | no change | No Learning   |
+| O         |           69.66 |            69.66 |         0 | no change | No Learning   |
+| Y         |           43.93 |            43.93 |         0 | no change | No Learning   |
+| \[Joint\] |          437.11 |           437.11 |         0 | no change | No Learning   |
+
+: Pre/Post Entropy Changes (Learning) in Protzko et al.
+:::
+
+However, as noted by Bak-Coleman and Devezer, the main aim of the paper was to establish new causal knowledge about two variables in that were not preregistered; namely, whether large sample sizes $S$ and quality preregistrations for each lab's study $R$ led to a stable replication rate $Y=0$. Unfortunately, we cannot evaluate any changes in entropy because, as Bak-Coleman and Devezer noted, there is no variation in these independent variables. In fact, it is irrelevant as to whether these variables were preregistered or not given that there is no variation with which to test them. Explicitly incorporating these variables in the causal graph makes this very clear.
+
+## Discussion
+
+At the same time, it is important to note that it is quite plausible that such variation could be created by either performing additional experiments in with $S$ and $R$ were modified in a controlled setting *or* by using external data about replication rates when $S$ was lower or $R$ did not exist. Of course, adding such data would lead to potential selection effects in that the data might not be comparable as Bak-Coleman and Devezer note. Nonetheless, it is important to note that the researchers could well be right that their study shows that open science practices are effective--they just need a comparison that they can draw relative to the data they collected.
+
+It is also possible to think of the study as providing additional evidence for the null effect of observing research studies on the replication rate. In the form presented, the probabilities are provided as discrete numbers; it is possible to also add uncertainty in researcher priors via the Dirichlet distribution [@humphreys2023]. I leave this possibility for future research as it would significantly complicate the construction of causal graphs–it might be better to first begin the process of preregistering graphs before we expand into more complex graph construction.
 
 # Conclusion
 
 <!-- I aver that many of our problems with defining and supporting descriptive research stems from our conception of causality as a binary process: either a piece of research is or is not causal. It is not that RCTs have more issues than are commonly acknowledged, but rather that the definition of RCT as the gold standard means that we artificially deflate the value of other modes of causal analysis. We should take a charitable approach by admitting that various theories and practices of inference contain varying amounts of causal knowledge, with the amount varying in relation to the credibility of the research design. However, as the maximum entropy principle shows, we cannot evaluate the relative causal knowledge obtained without a consideration of what is and is not known about a given causal system. -->
 
-The principle of entropy provides one helpful framework by imagining the benefit of a study from the relative reduction or inflation in the entropy of a causal system. By doing so, we can change preregistration from a falsificationist standard to a more holistic and flexible form of preregistering our general state of knowledge of a causal process. This method can also be integrated into meta-analysis studies, especially if studies are explicit about the causal graph they seek to understand. Ultimately, the aim of the framework is to create a level playing field for diverse research designs—including both exploratory and confirmatory studies—so that we do not under-invest in important lines of inquiry that might yield important information about causal systems even if they were not included in the original study design.
-
-# Competing Interests
-
-The author has no competing interests to declare.
-
-# Data and Code Availability Statement
-
-All data presented in this article is simulated from statistical distributions. All calculations shown in this article and referenced in the appendix are available from a public Github repository: REDACTED.
+This method of causal graph preregistration can help diversify preregistration from a purely falsificationist standard to a more holistic and flexible form of preregistering our general state of knowledge of a causal process. This method can also be integrated into meta-analysis studies, especially if studies are explicit about the causal graph they seek to understand. Ultimately, the aim of the framework is to create a level playing field for diverse research designs—including both exploratory and confirmatory studies—so that we do not under-invest in important lines of inquiry that might yield important information about causal systems even if they were not included in the original study design.
 
 \newpage
 

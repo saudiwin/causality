@@ -1,0 +1,33 @@
+---
+title: 'Holistic Causal Learning with Causal Graphs: A Credible Method for Study Design and Preregistration in the Social Sciences'
+date: today
+date-format: long
+author:
+  - name: Robert Kubinec
+    corresponding: true
+    email: rkubinec@mailbox.sc.edu
+    affiliations:
+      - ref: nyuad
+filters:
+ - authors-block
+affiliations:
+  - id: nyuad
+    name: University of South Carolina
+    city: Columbia
+    state: South Carolina
+    country: United States of America
+abstract: "While research designs in the social sciences have employed increasingly sophisticated methods to control false positive rates, there is still substantial debate about the merit of preregistration and other recent open science reforms. In this paper, I present a method for preregistering causal graphs and employing the metric of entropy to measure the amount of causal learning in diverse study designs--whether or not the analyses were exhaustively preregistered. By preregistering causal graphs and measuring causal learning, researches can engage in open-ended analyses without concerns about $p$-hacking. I provide R code to enable researchers to compute these metrics so they can add these calculations to their preregistrations and study designs.^[A reproducible version of this paper with code is available at <https://github.com/saudiwin/causality/blob/master/code/prereg_causal_graph.qmd>. I thank David Waldner, Christopher Winship, Michael Poznansky, Kevin Munger, Arthur Spirling, Andrew Gelman, Kosuke Imai and participants in Polmeth Asia 2023 for helpful comments on this manuscript.]"
+bibliography: references.bib
+toc: false
+fontsize: 12pt
+linestretch: 1.7
+fontfamily: times
+format: 
+  wordcount-pdf:
+    documentclass: article
+    keep-tex: true
+    includes-in-header: 
+      - file: preamble2.tex
+    geometry:
+      - margin=1in
+---
